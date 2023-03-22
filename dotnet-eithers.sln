@@ -1,0 +1,62 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1705.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42DBC35F-D3DC-4895-B1A1-963AB698AE62}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		generate-coverage-report.sh = generate-coverage-report.sh
+		generate-docs.sh = generate-docs.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1C313B4E-1D08-4332-9A2D-1F585598C09F}"
+	ProjectSection(SolutionItems) = preProject
+		docs\docfx.json = docs\docfx.json
+		docs\index.md = docs\index.md
+		docs\toc.yml = docs\toc.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{06DC73E8-A7EE-44A4-9231-C054B65BEB84}"
+	ProjectSection(SolutionItems) = preProject
+		docs\articles\intro.md = docs\articles\intro.md
+		docs\articles\toc.yml = docs\articles\toc.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C9C627FC-9E8E-46E2-8EA2-BC5CE16E24E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5FD63356-B521-4C45-854E-8B00A6F8520A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ainsworth.Eithers", "src\Eithers\Ainsworth.Eithers.csproj", "{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ainsworth.Eithers.Tests", "tests\Eithers.Tests\Ainsworth.Eithers.Tests.csproj", "{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9D07572-DBB4-4F80-BE08-56F263726C21}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{06DC73E8-A7EE-44A4-9231-C054B65BEB84} = {1C313B4E-1D08-4332-9A2D-1F585598C09F}
+		{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E} = {C9C627FC-9E8E-46E2-8EA2-BC5CE16E24E2}
+		{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF} = {5FD63356-B521-4C45-854E-8B00A6F8520A}
+	EndGlobalSection
+EndGlobal
