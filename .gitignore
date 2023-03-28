@@ -355,6 +355,9 @@ MigrationBackup/
 # Temporary files
 *.swp
 
+# Visual Studio Code
+.vscode/
+
 # Test and code coverage
 coverage.xml
 coverage-*/
