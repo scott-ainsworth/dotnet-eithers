@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Reflection;
+
 using Ainsworth.Eithers;
 using static Ainsworth.Eithers.Tests.TestData;
 
@@ -10,6 +12,22 @@ namespace NoneT_Tests;
 /// </summary>
 [TestClass]
 public class Constructor_Tests {
+
+    /// <summary>
+    ///   The <see cref="None{T}"/> constructors' visibility is not public.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_constructors_are_private() {
+        var type = typeof(None<int>);
+        var ctors = type.GetConstructors(
+            BindingFlags.Public | BindingFlags.NonPublic |
+            BindingFlags.Instance | BindingFlags.Static);
+        foreach (var ctor in ctors) {
+            Assert.IsTrue(
+                ctor.IsPrivate,
+                $"{ctor.DeclaringType!.Name} has at least 1 public constructor");
+        }
+    }
 }
 
 /// <summary>
