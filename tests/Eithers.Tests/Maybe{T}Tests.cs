@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections;
+using System.Reflection;
 
 using Ainsworth.Eithers;
 using static Ainsworth.Eithers.Tests.TestData;
@@ -110,6 +111,29 @@ public class MaybeT_Cast_Tests {
         Assert.IsInstanceOfType<Maybe<TestClass>>(classMaybe);
         Assert.IsInstanceOfType<Some<TestClass>>(classMaybe);
         Assert.AreEqual(classValue, (classMaybe as Some<TestClass>)!.Value);
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Maybe{T}"/> casts.
+/// </summary>
+[TestClass]
+public class Constructor_Tests {
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> constructors' visibility is not public.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_constructors_are_protected() {
+        var type = typeof(Maybe<int>);
+        var ctors = type.GetConstructors(
+            BindingFlags.Public | BindingFlags.NonPublic |
+            BindingFlags.Instance | BindingFlags.Static);
+        foreach (var ctor in ctors) {
+            Assert.IsFalse(
+                ctor.IsPublic,
+                $"{ctor.DeclaringType!.Name} has at least 1 public constructor");
+        }
     }
 }
 

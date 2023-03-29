@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Reflection;
+
 using Ainsworth.Eithers;
 
 using static Ainsworth.Eithers.Tests.TestData;
@@ -39,6 +41,23 @@ public class Cast_Tests {
 /// </summary>
 [TestClass]
 public class Constructor_Tests {
+
+    /// <summary>
+    ///   The <see cref="Some{T}"/> constructors' visibility is not public.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_constructors_are_protected_or_internal() {
+        var type = typeof(Some<int>);
+        var ctors = type.GetConstructors(
+            BindingFlags.Public | BindingFlags.NonPublic |
+            BindingFlags.Instance | BindingFlags.Static);
+        foreach (var ctor in ctors) {
+            // It
+            Assert.IsFalse(
+                ctor.IsPublic,
+                $"{ctor.DeclaringType!.Name} has at least 1 public constructor");
+        }
+    }
 
     /// <summary>
     ///   The <see cref="Some{T}"/> constructor creates the correct type
