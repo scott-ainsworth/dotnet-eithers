@@ -54,7 +54,7 @@ public class EqualsT_Method_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_Equals_returns_false_for_value_types_values() {
-        Assert.IsFalse(none.Equals(tupleValue));
+        Assert.IsFalse(none.Equals((111, "111")));
         Assert.IsFalse(none.Equals((decimal)111));
     }
 
@@ -65,8 +65,8 @@ public class EqualsT_Method_Tests {
     [TestMethod]
     public void NoneT_Equals_returns_false_for_reference_types_values() {
         Assert.IsFalse(none.Equals("111"));
-        Assert.IsFalse(none.Equals(arrayValue));
-        Assert.IsFalse(none.Equals(classValue));
+        Assert.IsFalse(none.Equals(new int[] { 111 }));
+        Assert.IsFalse(none.Equals(new TestClass(111, "111")));
     }
 }
 

@@ -379,7 +379,7 @@ public class HasValue_Property_Tests {
     [TestMethod]
     public void MaybeT_HasValue_returns_true_for_MaybeT_with_value() {
 
-        var intMaybe = Maybe.From(nullableInt111);
+        var intMaybe = Maybe.From((int?)111);
         Assert.IsInstanceOfType<Maybe<int>>(intMaybe);
         Assert.IsTrue(intMaybe.HasValue);
     }
@@ -391,7 +391,7 @@ public class HasValue_Property_Tests {
     [TestMethod]
     public void MaybeT_HasValue_returns_false_for_MaybeT_with_value() {
 
-        var nullIntMaybe = Maybe.From<int>(nullInt);
+        var nullIntMaybe = Maybe.From<int>((int?)null);
         Assert.IsInstanceOfType<Maybe<int>>(nullIntMaybe);
         Assert.IsFalse(nullIntMaybe.HasValue);
     }
