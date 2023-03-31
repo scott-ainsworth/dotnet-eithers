@@ -70,6 +70,11 @@ public class Constructor_Tests {
         Assert.IsInstanceOfType<Maybe<int>>(some);
         Assert.AreEqual(111, some.Value);
     }
+
+    [TestMethod]
+    public void SomeT_constructor_throws_for_null_value() {
+        Assert.ThrowsException<ArgumentNullException>(() => new Some<string>(null!));
+    }
 }
 
 /// <summary>
