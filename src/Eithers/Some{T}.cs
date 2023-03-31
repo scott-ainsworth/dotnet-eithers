@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -35,8 +36,10 @@ public class Some<T> : Maybe<T>
     ///   Initialize a new <see cref="Some{T}"/> using a specified value.
     /// </summary>
     /// <param name="value">The value to wrap.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
+    ///   is <see langword="null"/>.</exception>
     internal Some(T value) {
-        Value = value;
+        Value = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
