@@ -12,112 +12,6 @@ namespace MaybeT_Tests;
 ///   Unit tests for <see cref="Maybe{T}"/> casts.
 /// </summary>
 [TestClass]
-public class MaybeT_Cast_Tests {
-
-    /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
-    ///   correct wrapping the provided primitive value.
-    /// </summary>
-    [TestMethod]
-    public void MaybeT_cast_creates_correct_type_and_value_for_primitive_types() {
-
-        var enumMaybe = (Maybe<TestEnum>)TestEnum.E11;
-        Assert.IsInstanceOfType<Maybe<TestEnum>>(enumMaybe);
-        Assert.IsInstanceOfType<Some<TestEnum>>(enumMaybe);
-        Assert.AreEqual(TestEnum.E11, (enumMaybe as Some<TestEnum>)!.Value);
-
-        var intMaybe = (Maybe<int>)111;
-        Assert.IsInstanceOfType<Maybe<int>>(intMaybe);
-        Assert.IsInstanceOfType<Some<int>>(intMaybe);
-        Assert.AreEqual(111, (intMaybe as Some<int>)!.Value);
-    }
-
-    /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
-    ///   correct wrapping the provided nullable value type value.
-    /// </summary>
-    [TestMethod]
-    public void MaybeT_cast_creates_correct_type_and_value_for_nullable_primitive_types() {
-
-        TestEnum? nullableEnum = TestEnum.E11;
-        var enumMaybe = (Maybe<TestEnum>)nullableEnum;
-        Assert.IsInstanceOfType<Maybe<TestEnum>>(enumMaybe);
-        Assert.IsInstanceOfType<Some<TestEnum>>(enumMaybe);
-        Assert.AreEqual(TestEnum.E11, (enumMaybe as Some<TestEnum>)!.Value);
-
-        int? nullableInt = 111;
-        var intMaybe = (Maybe<int>)nullableInt;
-        Assert.IsInstanceOfType<Maybe<int>>(intMaybe);
-        Assert.IsInstanceOfType<Some<int>>(intMaybe);
-        Assert.AreEqual(111, (intMaybe as Some<int>)!.Value);
-    }
-
-    /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
-    ///   correct wrapping the provided value type value.
-    /// </summary>
-    [TestMethod]
-    public void MaybeT_Cast_creates_correct_type_and_value_for_value_types() {
-
-        var tupleMaybe = (Maybe<(int, string)>)tupleValue;
-        Assert.IsInstanceOfType<Maybe<(int, string)>>(tupleMaybe);
-        Assert.IsInstanceOfType<Some<(int, string)>>(tupleMaybe);
-        Assert.AreEqual(tupleValue, (tupleMaybe as Some<(int, string)>)!.Value);
-
-        var structMaybe = (Maybe<Decimal>)111;
-        Assert.IsInstanceOfType<Maybe<Decimal>>(structMaybe);
-        Assert.IsInstanceOfType<Some<Decimal>>(structMaybe);
-        Assert.AreEqual(111, (structMaybe as Some<Decimal>)!.Value);
-    }
-
-    /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
-    ///   correct wrapping the provided nullable value type value.
-    /// </summary>
-    [TestMethod]
-    public void MaybeT_cast_creates_correct_type_and_value_for_nullable_value_types() {
-
-        (int, string)? nullableTuple = tupleValue;
-        var tupleMaybe = (Maybe<(int, string)>)nullableTuple;
-        Assert.IsInstanceOfType<Maybe<(int, string)>>(tupleMaybe);
-        Assert.IsInstanceOfType<Some<(int, string)>>(tupleMaybe);
-        Assert.AreEqual(tupleValue, (tupleMaybe as Some<(int, string)>)!.Value);
-
-        Decimal? nullableStruct = 111;
-        var structMaybe = (Maybe<Decimal>)nullableStruct;
-        Assert.IsInstanceOfType<Maybe<Decimal>>(structMaybe);
-        Assert.IsInstanceOfType<Some<Decimal>>(structMaybe);
-        Assert.AreEqual(111, (structMaybe as Some<Decimal>)!.Value);
-    }
-
-    /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
-    ///   correct wrapping the provided nullable reference type value.
-    /// </summary>
-    [TestMethod]
-    public void MaybeT_cast_creates_correct_type_and_value_for_reference_types() {
-
-        var stringMaybe = (Maybe<string>)"111";
-        Assert.IsInstanceOfType<Maybe<string>>(stringMaybe);
-        Assert.IsInstanceOfType<Some<string>>(stringMaybe);
-        Assert.AreEqual("111", (stringMaybe as Some<string>)!.Value);
-
-        var arrayMaybe = (Maybe<int[]>)arrayValue;
-        Assert.IsInstanceOfType<Maybe<int[]>>(arrayMaybe);
-        Assert.IsInstanceOfType<Some<int[]>>(arrayMaybe);
-        Assert.AreEqual(arrayValue, (arrayMaybe as Some<int[]>)!.Value);
-
-        var classMaybe = (Maybe<TestClass>)classValue;
-        Assert.IsInstanceOfType<Maybe<TestClass>>(classMaybe);
-        Assert.IsInstanceOfType<Some<TestClass>>(classMaybe);
-        Assert.AreEqual(classValue, (classMaybe as Some<TestClass>)!.Value);
-    }
-}
-
-/// <summary>
-///   Unit tests for <see cref="Maybe{T}"/> casts.
-/// </summary>
-[TestClass]
 public class Constructor_Tests {
 
     /// <summary>
@@ -161,16 +55,46 @@ public class EqualsMaybeT_Method_Tests {
 [TestClass]
 public class EqualsObject_Method_Tests {
 
+    #region test implementions
+
+    private static void MaybeT_EqualsObject_returns_true_if_same_value<T>(T value)
+            where T : notnull {
+        Maybe<T> maybe = new Some<T>(value);
+        Assert.IsTrue(maybe.Equals((object)value));
+    }
+
+    private static void MaybeT_EqualsObject_returns_false_if_different_value<T>(T value, T value2)
+            where T : notnull {
+        Maybe<T> maybe = new Some<T>(value);
+        Assert.IsFalse(maybe.Equals((object)value2));
+    }
+
+    private static void MaybeT_EqualsObject_returns_false_for_None_and_value<T>(T value2)
+            where T : notnull =>
+        Assert.IsFalse(Maybe<T>.None.Equals((object)value2));
+
+    private static void MaybeT_EqualsObject_returns_false_for_None_and_null<T>()
+            where T : struct =>
+        Assert.IsFalse(Maybe<T>.None.Equals((object)(T?)null!));
+
+    private static void MaybeT_EqualsObject_returns_false_for_None_and_null_reference<T>()
+            where T : class =>
+        Assert.IsFalse(Maybe<T>.None.Equals((object)(T)null!));
+
+    private static void MaybeT_EqualsObject_returns_true_for_None_and_None<T>()
+            where T : notnull =>
+        Assert.IsTrue(Maybe<T>.None.Equals((object)Maybe<T>.None));
+
+    #endregion
+
     /// <summary>
     ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
     ///  for primitive types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_true_for_primitive_types_with_the_same_value() {
-        Maybe<int> intSome = new Some<int>(111);
-        Assert.IsTrue(intSome.Equals((object)111));
-        Maybe<TestEnum> enumSome = new Some<TestEnum>(TestEnum.E11);
-        Assert.IsTrue(enumSome.Equals((object)TestEnum.E11));
+    public void MaybeT_EqualsObject_returns_true_for_primitive_types_with_the_same_value() {
+        MaybeT_EqualsObject_returns_true_if_same_value(TestEnum.E11);
+        MaybeT_EqualsObject_returns_true_if_same_value(111);
     }
 
     /// <summary>
@@ -178,11 +102,9 @@ public class EqualsObject_Method_Tests {
     ///  for value types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_true_for_value_types_with_the_same_value() {
-        Maybe<(int, string)> tupleSome = new Some<(int, string)>((111, "111"));
-        Assert.IsTrue(tupleSome.Equals((object)(111, "111")));
-        Maybe<Decimal> decimalSome = new Some<Decimal>(111);
-        Assert.IsTrue(decimalSome.Equals((object)(Decimal)111));
+    public void MaybeT_EqualsObject_returns_true_for_value_types_with_the_same_value() {
+        MaybeT_EqualsObject_returns_true_if_same_value((111, "111"));
+        MaybeT_EqualsObject_returns_true_if_same_value((decimal)111);
     }
 
     /// <summary>
@@ -190,21 +112,14 @@ public class EqualsObject_Method_Tests {
     ///  for reference types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_true_for_reference_types_with_the_same_value() {
+    public void MaybeT_EqualsObject_returns_true_for_reference_types_with_the_same_value() {
 
         // Note: string overrides Equals to compare by value.
         // All other reference types compare by reference.
 
-        Maybe<string> stringSome = new Some<string>("111");
-        Assert.IsTrue(stringSome.Equals((object)"111"));
-
-        var arrayValue = new int[] { 111 };
-        Maybe<int[]> arraySome = new Some<int[]>(arrayValue);
-        Assert.IsTrue(arraySome.Equals((object)arrayValue));
-
-        var classValue = new TestClass(111, "111");
-        Maybe<TestClass> classSome = new Some<TestClass>(classValue);
-        Assert.IsTrue(classSome.Equals((object)classValue));
+        MaybeT_EqualsObject_returns_true_if_same_value("111");
+        MaybeT_EqualsObject_returns_true_if_same_value(new int[] { 111 });
+        MaybeT_EqualsObject_returns_true_if_same_value(new TestClass(111, "111"));
     }
 
     /// <summary>
@@ -212,11 +127,9 @@ public class EqualsObject_Method_Tests {
     ///  for primitive types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_false_for_primitive_types_with_the_different_value() {
-        Maybe<int> intSome = new Some<int>(111);
-        Assert.IsFalse(intSome.Equals((object)222));
-        Maybe<TestEnum> enumSome = new Some<TestEnum>(TestEnum.E11);
-        Assert.IsFalse(enumSome.Equals((object)TestEnum.E22));
+    public void MaybeT_EqualsObject_returns_false_for_primitive_types_with_the_different_value() {
+        MaybeT_EqualsObject_returns_false_if_different_value(TestEnum.E11, TestEnum.E22);
+        MaybeT_EqualsObject_returns_false_if_different_value(111, 222);
     }
 
     /// <summary>
@@ -224,11 +137,9 @@ public class EqualsObject_Method_Tests {
     ///  for value types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_false_for_value_types_with_the_different_value() {
-        Maybe<(int, string)> tupleSome = new Some<(int, string)>((111, "111"));
-        Assert.IsFalse(tupleSome.Equals((object)(222, "222")));
-        Maybe<Decimal> decimalSome = new Some<Decimal>(111);
-        Assert.IsFalse(decimalSome.Equals((object)(Decimal)222));
+    public void MaybeT_EqualsObject_returns_false_for_value_types_with_the_different_value() {
+        MaybeT_EqualsObject_returns_false_if_different_value((111, "111"), (222, "222"));
+        MaybeT_EqualsObject_returns_false_if_different_value((decimal)111, (decimal)222);
     }
 
     /// <summary>
@@ -236,21 +147,15 @@ public class EqualsObject_Method_Tests {
     ///  for reference types with the same values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_with_value_EqualsObject_returns_false_for_reference_types_with_the_different_value() {
+    public void MaybeT_EqualsObject_returns_false_for_reference_types_with_the_different_value() {
 
         // Note: string overrides Equals to compare by value.
         // All other reference types compare by reference.
 
-        Maybe<string> stringSome = new Some<string>("111");
-        Assert.IsFalse(stringSome.Equals((object)"222"));
-
-        var arrayValue = new int[] { 111 };
-        Maybe<int[]> arraySome = new Some<int[]>(arrayValue);
-        Assert.IsFalse(arraySome.Equals((object)new int[] { 222 }));
-
-        var classValue = new TestClass(111, "111");
-        Maybe<TestClass> classSome = new Some<TestClass>(classValue);
-        Assert.IsFalse(classSome.Equals((object)new TestClass(222, "222")));
+        MaybeT_EqualsObject_returns_false_if_different_value("111", "222");
+        MaybeT_EqualsObject_returns_false_if_different_value(new int[] { 111 }, new int[] { 222 });
+        MaybeT_EqualsObject_returns_false_if_different_value(
+            new TestClass(111, "111"), new TestClass(222, "222"));
     }
 
     /// <summary>
@@ -259,8 +164,8 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_primitive_type_values() {
-        Assert.IsFalse(Maybe<TestEnum>.None.Equals((object)TestEnum.E11));
-        Assert.IsFalse(Maybe<int>.None.Equals((object)111));
+        MaybeT_EqualsObject_returns_false_for_None_and_value(TestEnum.E22);
+        MaybeT_EqualsObject_returns_false_for_None_and_value(222);
     }
 
     /// <summary>
@@ -269,8 +174,8 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_value_types_values() {
-        Assert.IsFalse(Maybe<(int, string)>.None.Equals((object)tupleValue));
-        Assert.IsFalse(Maybe<Decimal>.None.Equals((object)(Decimal)111));
+        MaybeT_EqualsObject_returns_false_for_None_and_value((222, "222"));
+        MaybeT_EqualsObject_returns_false_for_None_and_value((decimal)222);
     }
 
     /// <summary>
@@ -279,9 +184,9 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_reference_types_values() {
-        Assert.IsFalse(Maybe<string>.None.Equals((object)"111"));
-        Assert.IsFalse(Maybe<int[]>.None.Equals((object)arrayValue));
-        Assert.IsFalse(Maybe<TestClass>.None.Equals((object)classValue));
+        MaybeT_EqualsObject_returns_false_for_None_and_value("222");
+        MaybeT_EqualsObject_returns_false_for_None_and_value(new int[] { 222 });
+        MaybeT_EqualsObject_returns_false_for_None_and_value(new TestClass(222, "222"));
     }
 
     /// <summary>
@@ -290,10 +195,8 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_null_primitive_types() {
-        TestEnum? nullEnum = null;
-        Assert.IsFalse(Maybe<TestEnum>.None.Equals((object?)nullEnum));
-        int? nullInt = null;
-        Assert.IsFalse(Maybe<int>.None.Equals((object?)nullInt));
+        MaybeT_EqualsObject_returns_false_for_None_and_null<TestEnum>();
+        MaybeT_EqualsObject_returns_false_for_None_and_null<int>();
     }
 
     /// <summary>
@@ -302,10 +205,8 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_null_value_types() {
-        (int, string)? nullTuple = null;
-        Assert.IsFalse(Maybe<(int, string)>.None.Equals((object?)nullTuple));
-        Decimal? nullDecimal = null;
-        Assert.IsFalse(Maybe<Decimal>.None.Equals((object?)nullDecimal));
+        MaybeT_EqualsObject_returns_false_for_None_and_null<(int, string)>();
+        MaybeT_EqualsObject_returns_false_for_None_and_null<decimal>();
     }
 
     /// <summary>
@@ -314,12 +215,9 @@ public class EqualsObject_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_without_value_EqualsObject_returns_false_for_null_reference_types() {
-        string nullString = null!;
-        Assert.IsFalse(Maybe<string>.None.Equals((object)nullString));
-        int[] nullArray = null!;
-        Assert.IsFalse(Maybe<int[]>.None.Equals((object)nullArray));
-        TestClass nullClass = null!;
-        Assert.IsFalse(Maybe<TestClass>.None.Equals((object)nullClass));
+        MaybeT_EqualsObject_returns_false_for_None_and_null_reference<string>();
+        MaybeT_EqualsObject_returns_false_for_None_and_null_reference<int[]>();
+        MaybeT_EqualsObject_returns_false_for_None_and_null_reference<TestClass>();
     }
 
     /// <summary>
@@ -327,9 +225,9 @@ public class EqualsObject_Method_Tests {
     ///  for primitive type <see cref="Maybe{T}.None"/> values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_without_value_EqualsObject_returns_false_for_primitive_type_NoneTs() {
-        Assert.IsTrue(Maybe<TestEnum>.None.Equals((object?)Maybe<TestEnum>.None));
-        Assert.IsTrue(Maybe<int>.None.Equals((object?)Maybe<int>.None));
+    public void MaybeT_without_value_EqualsObject_returns_true_for_primitive_type_None() {
+        MaybeT_EqualsObject_returns_true_for_None_and_None<TestEnum>();
+        MaybeT_EqualsObject_returns_true_for_None_and_None<int>();
     }
 
     /// <summary>
@@ -337,9 +235,9 @@ public class EqualsObject_Method_Tests {
     ///  for value type <see cref="Maybe{T}.None"/> values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_without_value_EqualsObject_returns_false_for_value_type_NoneTs() {
-        Assert.IsTrue(Maybe<(int, string)>.None.Equals((object?)Maybe<(int, string)>.None));
-        Assert.IsTrue(Maybe<Decimal>.None.Equals((object?)Maybe<Decimal>.None));
+    public void MaybeT_without_value_EqualsObject_returns_true_for_value_type_None() {
+        MaybeT_EqualsObject_returns_true_for_None_and_None<(int, string)>();
+        MaybeT_EqualsObject_returns_true_for_None_and_None<decimal>();
     }
 
     /// <summary>
@@ -347,10 +245,10 @@ public class EqualsObject_Method_Tests {
     ///  for reference type <see cref="Maybe{T}.None"/> values.
     /// </summary>
     [TestMethod]
-    public void MaybeT_without_value_EqualsObject_returns_false_for_reference_type_NoneTs() {
-        Assert.IsTrue(Maybe<string>.None.Equals((object)Maybe<string>.None));
-        Assert.IsTrue(Maybe<int[]>.None.Equals((object)Maybe<int[]>.None));
-        Assert.IsTrue(Maybe<TestClass>.None.Equals((object)Maybe<TestClass>.None));
+    public void MaybeT_without_value_EqualsObject_returns_true_for_reference_type_None() {
+        MaybeT_EqualsObject_returns_true_for_None_and_None<string>();
+        MaybeT_EqualsObject_returns_true_for_None_and_None<int[]>();
+        MaybeT_EqualsObject_returns_true_for_None_and_None<TestClass>();
     }
 }
 
@@ -421,20 +319,25 @@ public class GetEnumerator_Method_Tests {
 [TestClass]
 public class GetHashCode_Method_Tests {
 
+    #region test implementaions
+
+    private static void MaybeT_GetHashCode_returns_correct_value<T>(T value, T value2)
+            where T: notnull {
+        var maybe = Maybe.Some<T>(value);
+        Assert.AreEqual(value.GetHashCode(), maybe.GetHashCode());
+        Assert.AreNotEqual(value2.GetHashCode(), maybe.GetHashCode());
+    }
+
+    #endregion
+
     /// <summary>
     ///   The <see cref="Maybe{T}.GetHashCode"/> method returns the correct value
     ///   for primitive type values.
     /// </summary>
     [TestMethod]
     public void MaybeT_GetHashCode_returns_correct_value_for_primitive_types() {
-
-        var enumMaybe = Maybe.From<TestEnum>(TestEnum.E11);
-        Assert.AreEqual(TestEnum.E11.GetHashCode(), enumMaybe.GetHashCode());
-        Assert.AreNotEqual(TestEnum.E22.GetHashCode(), enumMaybe.GetHashCode());
-
-        var intMaybe = Maybe.From<int>(111);
-        Assert.AreEqual(111.GetHashCode(), intMaybe.GetHashCode());
-        Assert.AreNotEqual(222.GetHashCode(), intMaybe.GetHashCode());
+        MaybeT_GetHashCode_returns_correct_value(TestEnum.E11, TestEnum.E22);
+        MaybeT_GetHashCode_returns_correct_value(111, 222);
     }
 
     /// <summary>
@@ -443,14 +346,8 @@ public class GetHashCode_Method_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_GetHashCode_returns_correct_value_for_value_types() {
-
-        var tupleMaybe = Maybe.From<(int, string)>(tupleValue);
-        Assert.AreEqual(tupleValue.GetHashCode(), tupleMaybe.GetHashCode());
-        Assert.AreNotEqual(tupleValue2.GetHashCode(), tupleMaybe.GetHashCode());
-
-        var structMaybe = Maybe.From<Decimal>(111);
-        Assert.AreEqual(((Decimal)111).GetHashCode(), structMaybe.GetHashCode());
-        Assert.AreNotEqual(((Decimal)222).GetHashCode(), structMaybe.GetHashCode());
+        MaybeT_GetHashCode_returns_correct_value((111, "111"), (222, "222"));
+        MaybeT_GetHashCode_returns_correct_value((decimal)111, (decimal)222);
     }
 
     /// <summary>
@@ -462,18 +359,10 @@ public class GetHashCode_Method_Tests {
         "Globalization", "CA1307:Specify StringComparison for clarity",
         Justification = "StringComparison cannot be used within Maybe<T>")]
     public void MaybeT_GetHashCode_returns_correct_value_for_reference_types() {
-
-        var stringMaybe = Maybe.From("111");
-        Assert.AreEqual("111".GetHashCode(), stringMaybe.GetHashCode());
-        Assert.AreNotEqual("222".GetHashCode(), stringMaybe.GetHashCode());
-
-        var arrayMaybe = Maybe.From(arrayValue);
-        Assert.AreEqual(arrayValue.GetHashCode(), arrayMaybe.GetHashCode());
-        Assert.AreNotEqual(arrayValue2.GetHashCode(), arrayMaybe.GetHashCode());
-
-        var classMaybe = Maybe.From(classValue);
-        Assert.AreEqual(classValue.GetHashCode(), classMaybe.GetHashCode());
-        Assert.AreNotEqual(classValue2.GetHashCode(), classMaybe.GetHashCode());
+        MaybeT_GetHashCode_returns_correct_value("111", "222");
+        MaybeT_GetHashCode_returns_correct_value(new int[] { 111 }, new int[] { 222 });
+        MaybeT_GetHashCode_returns_correct_value(
+            new TestClass(111, "111"), new TestClass(222, "222"));
     }
 }
 
@@ -505,5 +394,136 @@ public class HasValue_Property_Tests {
         var nullIntMaybe = Maybe.From<int>(nullInt);
         Assert.IsInstanceOfType<Maybe<int>>(nullIntMaybe);
         Assert.IsFalse(nullIntMaybe.HasValue);
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Maybe{T}"/> casts.
+/// </summary>
+[TestClass]
+public class MaybeT_Cast_Tests {
+
+    #region test implementions
+
+    private static void MaybeT_cast_creates_Some_from_value<T>(T value) where T : struct {
+        var maybe = (Maybe<T>)value;
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<Some<T>>(maybe);
+        var some = (maybe as Some<T>)!;
+        Assert.AreEqual(value, some.Value);
+    }
+
+    private static void MaybeT_cast_creates_Some_from_nullable_value<T>(T value) where T : struct {
+        var maybe = (Maybe<T>)(T?)value;
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<Some<T>>(maybe);
+        var some = (maybe as Some<T>)!;
+        Assert.AreEqual(value, some.Value);
+    }
+
+    private static void MaybeT_cast_creates_None_from_null<T>(T? value) where T : struct {
+        var maybe = Maybe.From<T>(value);
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<None<T>>(maybe);
+        Assert.AreSame(Maybe<T>.None, maybe);
+    }
+
+    private static void MaybeT_cast_creates_Some_from_reference_value<T>(T value) where T : class {
+        var maybe = Maybe.From<T>(value);
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<Some<T>>(maybe);
+        var some = (maybe as Some<T>)!;
+        Assert.AreEqual(value, some.Value);
+    }
+
+    private static void MaybeT_cast_creates_None_from_null<T>(T? value) where T : class {
+        var maybe = Maybe.From<T>(value);
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<None<T>>(maybe);
+        Assert.AreSame(Maybe<T>.None, maybe);
+    }
+
+    #endregion
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   correct wrapping the provided primitive value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_Some_for_primitive_type_value() {
+        MaybeT_cast_creates_Some_from_value(TestEnum.E11);
+        MaybeT_cast_creates_Some_from_value(111);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   correct wrapping the provided nullable value type value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_Some_for_nullable_primitive_type_value() {
+        MaybeT_cast_creates_Some_from_nullable_value(TestEnum.E11);
+        MaybeT_cast_creates_Some_from_nullable_value(111);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   correct wrapping the provided value type value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_Cast_creates_Some_for_value_type_value() {
+        MaybeT_cast_creates_Some_from_value((111, "111"));
+        MaybeT_cast_creates_Some_from_value((decimal)111);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   correct wrapping the provided nullable value type value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_Some_for_nullable_value_type_value() {
+        MaybeT_cast_creates_Some_from_nullable_value((111, "111"));
+        MaybeT_cast_creates_Some_from_nullable_value((decimal)111);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   correct wrapping the provided nullable reference type value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_Some_for_reference_type_value() {
+        MaybeT_cast_creates_Some_from_reference_value("111");
+        MaybeT_cast_creates_Some_from_reference_value(new int[] { 111 });
+        MaybeT_cast_creates_Some_from_reference_value(new TestClass(111, "111"));
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns <see cref="Maybe{T}.None"/> singleton
+    ///   for the provided primitive type null value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_None_for_primitive_type_null() {
+        MaybeT_cast_creates_None_from_null((TestEnum?)null);
+        MaybeT_cast_creates_None_from_null((int?)null);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns <see cref="Maybe{T}.None"/> singleton
+    ///   for the provided value type null value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_None_for_value_type_null() {
+        MaybeT_cast_creates_None_from_null(((int, string)?)null);
+        MaybeT_cast_creates_None_from_null((decimal?)null);
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}"/> cast returns <see cref="Maybe{T}.None"/> singleton
+    ///   for the provided reference type null value.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_cast_creates_None_for_reference_type_null() {
+        MaybeT_cast_creates_None_from_null((string?)null);
+        MaybeT_cast_creates_None_from_null((int[]?)null);
+        MaybeT_cast_creates_None_from_null((TestClass?)null);
     }
 }
