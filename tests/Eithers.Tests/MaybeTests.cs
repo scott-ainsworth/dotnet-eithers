@@ -10,7 +10,7 @@ namespace Maybe_Tests;
 [TestClass]
 public class FromT_Method_Tests {
 
-    #region test implementions
+    #region test implementations
 
     // Value type versions
 
@@ -70,7 +70,7 @@ public class FromT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided nullable primitive type value.
     /// </summary>
     [TestMethod]
@@ -80,7 +80,7 @@ public class FromT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided value type value.
     /// </summary>
     [TestMethod]
@@ -90,7 +90,7 @@ public class FromT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided nullable value type value.
     /// </summary>
     [TestMethod]
@@ -100,7 +100,7 @@ public class FromT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.From{T}(T?)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided reference type value.
     /// </summary>
     [TestMethod]
@@ -148,7 +148,7 @@ public class FromT_Method_Tests {
 [TestClass]
 public class SomeT_Method_Tests {
 
-    #region test implementions
+    #region test implementations
 
     // Value type versions
 
@@ -177,7 +177,7 @@ public class SomeT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.Some{T}(T)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.Some{T}(T)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided value type value.
     /// </summary>
     [TestMethod]
@@ -187,7 +187,7 @@ public class SomeT_Method_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe.Some{T}(T)"/> method returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe.Some{T}(T)"/> method returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided reference type value.
     /// </summary>
     [TestMethod]
@@ -200,7 +200,7 @@ public class SomeT_Method_Tests {
     /// <summary>
     ///   The <see cref="Maybe.Some{T}(T)"/> method throws an
     ///   <see cref="ArgumentNullException"/> when a non-nullable reference type value
-    ///   is <see langword="null"/>. 
+    ///   is <see langword="null"/>.
     /// </summary>
     /// <remarks>
     ///     <para>This condition will normally be caught by the C# compiler's null analysis,
@@ -223,7 +223,7 @@ public class SomeT_Method_Tests {
 [TestClass]
 public class ToMaybeT_ExtensionMethod_Tests {
 
-    #region test implementions
+    #region test implementations
 
     private static void Maybe_ToMaybeT_creates_Some_from_reference_value<T>(T? value) where T : class {
         var maybe = value.ToMaybe();
@@ -322,7 +322,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
 [TestClass]
 public class ToSomeT_ExtensionMethod_Tests {
 
-    #region test implementions
+    #region test implementations
 
     private static void Maybe_ToSomeT_creates_Some_from_value<T>(T value) where T : notnull {
         var some = value.ToSome();
@@ -370,7 +370,7 @@ public class ToSomeT_ExtensionMethod_Tests {
     /// <summary>
     ///   The <see cref="Maybe.ToSome{T}(T)"/> method throws an
     ///   <see cref="ArgumentNullException"/> when a non-nullable reference type value
-    ///   is <see langword="null"/>. 
+    ///   is <see langword="null"/>.
     /// </summary>
     /// <remarks>
     ///     <para>This condition will normally be caught by the C# compiler's null analysis,

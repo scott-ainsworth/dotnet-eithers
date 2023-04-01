@@ -37,7 +37,7 @@ public class Constructor_Tests {
     Justification = "Tests are in subclasses. This is an audit trail.")]
 [TestClass]
 public class EqualsT_Method_Tests {
-    // Maybe<T>.Equals(T) is an abstract method. No tests needed. 
+    // Maybe<T>.Equals(T) is an abstract method. No tests needed.
     // All tests implemented for the Some<T> and None<T> classes.
 }
 
@@ -59,7 +59,7 @@ public class EqualsMaybeT_Method_Tests {
 [TestClass]
 public class EqualsObject_Method_Tests {
 
-    #region test implementions
+    #region test implementations
 
     private static void EqualsObject_returns_true_if_same_value<T>(T value)
             where T : notnull {
@@ -328,7 +328,7 @@ public class GetEnumerator_Method_Tests {
 [TestClass]
 public class GetHashCode_Method_Tests {
 
-    #region test implementaions
+    #region test implementations
 
     private static void MaybeT_GetHashCode_returns_correct_value<T>(T value, T value2)
             where T : notnull {
@@ -409,7 +409,7 @@ public class HasValue_Property_Tests {
 [TestClass]
 public class MaybeT_Cast_Tests {
 
-    #region test implementions
+    #region test implementations
 
     private static void MaybeT_cast_creates_Some_from_value<T>(T value) where T : struct {
         var maybe = (Maybe<T>)value;
@@ -452,7 +452,7 @@ public class MaybeT_Cast_Tests {
     #endregion
 
     /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided primitive value.
     /// </summary>
     [TestMethod]
@@ -462,7 +462,7 @@ public class MaybeT_Cast_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided nullable value type value.
     /// </summary>
     [TestMethod]
@@ -472,7 +472,7 @@ public class MaybeT_Cast_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided value type value.
     /// </summary>
     [TestMethod]
@@ -482,7 +482,7 @@ public class MaybeT_Cast_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided nullable value type value.
     /// </summary>
     [TestMethod]
@@ -492,7 +492,7 @@ public class MaybeT_Cast_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the 
+    ///   The <see cref="Maybe{T}"/> cast returns a <see cref="Some{T}"/> of the
     ///   correct wrapping the provided nullable reference type value.
     /// </summary>
     [TestMethod]
