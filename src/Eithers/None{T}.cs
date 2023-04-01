@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Ainsworth.Eithers;
 
@@ -82,7 +83,8 @@ public class None<T> : Maybe<T>
     ///  A string that represents this <see cref="None{T}"/>.
     /// </returns>
     public override string ToString() =>
-        $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(Maybe<T>.None)}";
+        $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(None)}";
+
 
     #endregion
 }
