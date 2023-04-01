@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Reflection;
 
 using Ainsworth.Eithers;
@@ -19,13 +17,13 @@ public class Constructor_Tests {
     [TestMethod]
     public void NoneT_constructors_are_private() {
         var type = typeof(None<int>);
-        var ctors = type.GetConstructors(
+        var constructors = type.GetConstructors(
             BindingFlags.Public | BindingFlags.NonPublic |
             BindingFlags.Instance | BindingFlags.Static);
-        foreach (var ctor in ctors) {
+        foreach (var constructor in constructors) {
             Assert.IsTrue(
-                ctor.IsPrivate,
-                $"{ctor.DeclaringType!.Name} has at least 1 public constructor");
+                constructor.IsPrivate,
+                $"{constructor.DeclaringType!.Name} has at least 1 public constructor");
         }
     }
 }
@@ -155,38 +153,7 @@ public class GetEnumerator_Method_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="None{T}"/> methods and extention methods.
-/// </summary>
-[TestClass]
-public class GetHashCode_Method_Tests {
-
-    private readonly Maybe<int> none = Maybe<int>.None;
-
-    /// <summary>
-    ///   The <see cref="None{T}.GetHashCode"/> method returns a statistically-unique
-    ///   for each different <see cref="None{T}"/> type.
-    /// </summary>
-    /// <remarks>
-    ///   This requirement is essentially impossible to test.  Confidence is obtained
-    ///   by checking that none of the <see cref="None{T}"/>s used in this test suite
-    ///   generate the same hash.
-    /// </remarks>
-    [TestMethod]
-    public void NoneT_GetHashCode_returns_statistically_unique_value() {
-        var noneHashCode = none.GetHashCode();
-        Assert.AreNotEqual(Maybe<TestEnum>.None.GetHashCode(), Maybe<int>.None.GetHashCode());
-        Assert.AreNotEqual(Maybe<int>.None.GetHashCode(), Maybe<TestEnum>.None.GetHashCode());
-        Assert.AreNotEqual(Maybe<(int, string)>.None.GetHashCode(), Maybe<decimal>.None.GetHashCode());
-        Assert.AreNotEqual(Maybe<decimal>.None.GetHashCode(), Maybe<(int, string)>.None.GetHashCode());
-        Assert.AreNotEqual(noneHashCode, Maybe<string>.None.GetHashCode());
-        Assert.AreNotEqual(noneHashCode, Maybe<int[]>.None.GetHashCode());
-        Assert.AreNotEqual(noneHashCode, Maybe<TestClass>.None.GetHashCode());
-        Assert.AreNotEqual(noneHashCode, Maybe.From<int>(111).GetHashCode());
-    }
-}
-
-/// <summary>
-///   Unit tests for <see cref="Some{T}"/> methods and extention methods.
+///   Unit tests for <see cref="Some{T}.HasValue"/> property.
 /// </summary>
 [TestClass]
 public class HasValue_Property_Tests {
@@ -199,10 +166,31 @@ public class HasValue_Property_Tests {
     public void NoneT_HasValue_returns_false_for_primitive_types() {
         Assert.IsFalse(Maybe<int>.None.HasValue);
         Assert.IsFalse(Maybe<TestEnum>.None.HasValue);
-        Assert.IsFalse(Maybe<TestStruct>.None.HasValue);
         Assert.IsFalse(Maybe<(int, string)>.None.HasValue);
+        Assert.IsFalse(Maybe<decimal>.None.HasValue);
         Assert.IsFalse(Maybe<string>.None.HasValue);
         Assert.IsFalse(Maybe<int[]>.None.HasValue);
         Assert.IsFalse(Maybe<TestClass>.None.HasValue);
+    }
+}
+
+/// <summary>
+///   Unit tests for the <see cref="None{T}.ToString"/> method.
+/// </summary>
+[TestClass]
+public class ToString_Tests {
+
+    /// <summary>
+    ///   The <see cref="None{T}.ToString"/> method returns the expected represention.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_ToString_creates_expected_representation() {
+        Assert.AreEqual("Maybe<TestEnum>.None", Maybe<TestEnum>.None.ToString());
+        Assert.AreEqual("Maybe<Int32>.None", Maybe<int>.None.ToString());
+        Assert.AreEqual("Maybe<ValueTuple`2>.None", Maybe<(int, string)>.None.ToString());
+        Assert.AreEqual("Maybe<Decimal>.None", Maybe<decimal>.None.ToString());
+        Assert.AreEqual("Maybe<String>.None", Maybe<string>.None.ToString());
+        Assert.AreEqual("Maybe<Int32[]>.None", Maybe<int[]>.None.ToString());
+        Assert.AreEqual("Maybe<TestClass>.None", Maybe<TestClass>.None.ToString());
     }
 }

@@ -20,5 +20,6 @@
 		<AnalysisMode>All</AnalysisMode>
 		<AnalysisLevel>5</AnalysisLevel>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 </Project>

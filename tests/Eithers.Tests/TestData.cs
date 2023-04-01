@@ -1,12 +1,10 @@
-#nullable enable
-
-using System.Diagnostics;
-
 namespace Ainsworth.Eithers.Tests;
 
 internal static class TestData {
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Minor Code Smell", "S2344:Enumeration type names should not have \"Flags\" or \"Enum\" suffixes",
+        Justification = "The 'Enum' suffix makes sense in this testing context.")]
     internal enum TestEnum { E11, E22 }
-    internal record struct TestStruct(int I, string S);
     internal sealed record class TestClass(int I, string S);
 }
