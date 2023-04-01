@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,6 +19,9 @@ namespace Ainsworth.Eithers;
 ///       .NET Curry: The Maybe Monad (C#)</a></item>
 ///   </list>
 /// </remarks>
+[SuppressMessage(
+    "Design", "CA1067:Override Object.Equals(object) when implementing IEquatable<T>",
+    Justification = "base.GetHasCode() provides correct implementation")]
 public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerable<T>
     where T : notnull {
 
@@ -54,10 +55,7 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     [SuppressMessage(
         "Usage", "CA2225:Operator overloads have named alternates",
         Justification = "ToMaybe<T> provided in class Maybe")]
-    public static implicit operator Maybe<T>(T? value) =>
-        value is T v
-            ? new Some<T>(v)
-            : Maybe<T>.None;
+    public static implicit operator Maybe<T>(T? value) => value is T v ? new Some<T>(v) : None;
 
     #endregion
     #region IEquateable<Maybe<T>>, IEquatable<T>, and IEquatable Implementions
@@ -87,24 +85,6 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     /// </returns>
     public abstract bool Equals(Maybe<T> other);
 
-    /// <summary>
-    ///   Returns a value indicating whether this instance's wrapped value is equal to
-    ///   the specified object.
-    /// </summary>
-    /// <param name="obj">An object to compare with this instance.</param>
-    /// <returns>
-    ///   <see langword="true"/> if <paramref name="obj"/> is an instance of
-    ///   <see cref="Maybe{T}"/> and <paramref name="obj"/>'s wrapped value equals this
-    ///   instance's wrapped value, or <see langword="true"/> if <paramref name="obj"/> is an
-    ///   instance of <typeparamref name="T"/> and equals this instance's wrapped value;
-    ///   otherwise <see langword="false"/>.
-    /// </returns>
-    public override bool Equals(object? obj) => obj switch {
-        Maybe<T> other => Equals(other),
-        T other => Equals(other),
-        _ => false
-    };
-
     #endregion
     #region IEnumerator<T> Implementation
 
@@ -127,23 +107,6 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     ///   instance's zero or one values.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    #endregion
-    #region GetHashCode overrides
-
-    /// <summary>
-    ///   Returns the hash code for this <see cref="Maybe{T}"/>.
-    /// </summary>
-    /// <returns>
-    ///   A 32-bit signed integer hash code.
-    /// </returns>
-    /// <remarks>
-    ///   The hash code for <see cref="Some{T}"/> instances is the wrapped value's hash code.
-    ///   The hash code for <see cref="None{T}"/> instances is computed using
-    ///   <see cref="object.GetHashCode"/> (i.e., the default hash function).
-    /// </remarks>
-    public override int GetHashCode() =>
-        this is Some<T> some ? some.GetHashCode() : base.GetHashCode();
 
     #endregion
 }

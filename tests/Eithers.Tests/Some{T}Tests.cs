@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Reflection;
 
 using Ainsworth.Eithers;
@@ -16,7 +14,7 @@ public class Cast_Tests {
 
     #region test implementations
 
-    private static void SomeT_case_creates_Some_from_value<T>(T value) where T: notnull {
+    private static void SomeT_case_creates_Some_from_value<T>(T value) where T : notnull {
 
         // explicit cast
         var some = (Some<T>)value;
@@ -73,7 +71,7 @@ public class Constructor_Tests {
 
     #region test implementations
 
-    private static void SomeT_constructor_creates_SomeT<T>(T value) where T: notnull {
+    private static void SomeT_constructor_creates_SomeT<T>(T value) where T : notnull {
         var some = new Some<T>(value);
         Assert.IsInstanceOfType<Some<T>>(some);
         Assert.IsInstanceOfType<Maybe<T>>(some);
@@ -91,14 +89,14 @@ public class Constructor_Tests {
     [TestMethod]
     public void SomeT_constructors_are_protected_or_internal() {
         var type = typeof(Some<int>);
-        var ctors = type.GetConstructors(
+        var constructors = type.GetConstructors(
             BindingFlags.Public | BindingFlags.NonPublic |
             BindingFlags.Instance | BindingFlags.Static);
-        foreach (var ctor in ctors) {
+        foreach (var constructor in constructors) {
             // It
             Assert.IsFalse(
-                ctor.IsPublic,
-                $"{ctor.DeclaringType!.Name} has at least 1 public constructor");
+                constructor.IsPublic,
+                $"{constructor.DeclaringType!.Name} has at least 1 public constructor");
         }
     }
 
@@ -219,7 +217,7 @@ public class EqualsT_Method_Tests {
     [TestMethod]
     public void SomeT_EqualsT_returns_false_for_value_types_with_the_different_value() {
         EqualsT_returns_true_for_different_value((111, "111"), (222, "222"));
-        EqualsT_returns_true_for_different_value((decimal)111, (decimal)222);
+        EqualsT_returns_true_for_different_value<decimal>(111, 222);
     }
 
     /// <summary>
@@ -320,7 +318,7 @@ public class Equals_MaybeT_Method_Tests {
     [TestMethod]
     public void SomeT_EqualsMaybeT_returns_false_for_value_type_with_the_different_value() {
         Equals_MaybeT_returns_false_for_different_value((111, "111"), (222, "222"));
-        Equals_MaybeT_returns_false_for_different_value((decimal)111, (decimal)222);
+        Equals_MaybeT_returns_false_for_different_value<decimal>(111, 222);
     }
 
     /// <summary>
@@ -383,7 +381,7 @@ public class GetEnumerator_Method_Tests {
 
     #region test implementaions
 
-    private static void GetEnumerator_returns_correct_enumerator<T>(T value) where T: notnull {
+    private static void GetEnumerator_returns_correct_enumerator<T>(T value) where T : notnull {
         var some = new Some<T>(value);
         var enumerator = some.GetEnumerator();
         Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
@@ -427,7 +425,7 @@ public class GetEnumerator_Method_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Some{T}"/> methods and extention methods.
+///   Unit tests for <see cref="Some{T}"/> methods and extension methods.
 /// </summary>
 [TestClass]
 public class GetHashCode_Method_Tests {
@@ -436,7 +434,7 @@ public class GetHashCode_Method_Tests {
 
     private static void GetHashCode_returns_hash_value_derived_from_wrapped_value<T>(
             T value, T value2)
-            where T: notnull {
+            where T : notnull {
         var maybe = new Some<T>(value);
         Assert.AreEqual(value.GetHashCode(), maybe.GetHashCode());
         Assert.AreNotEqual(value2.GetHashCode(), maybe.GetHashCode());
@@ -445,39 +443,30 @@ public class GetHashCode_Method_Tests {
     #endregion
 
     /// <summary>
-    ///   The <see cref="None{T}.GetHashCode"/> method returns a hash code computed
-    ///   from the wrapped value for primtive type.
+    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
+    ///   from the wrapped value for primitive type.
     /// </summary>
     [TestMethod]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Globalization", "CA1307:Specify StringComparison for clarity",
-        Justification = "StringComparison cannot be used within Maybe<T>")]
     public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_primitive_types() {
         GetHashCode_returns_hash_value_derived_from_wrapped_value(111, 222);
         GetHashCode_returns_hash_value_derived_from_wrapped_value(TestEnum.E11, TestEnum.E22);
     }
 
     /// <summary>
-    ///   The <see cref="None{T}.GetHashCode"/> method returns a hash code computed
+    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
     ///   from the wrapped value for value types.
     /// </summary>
     [TestMethod]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Globalization", "CA1307:Specify StringComparison for clarity",
-        Justification = "StringComparison cannot be used within Maybe<T>")]
     public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_value_types() {
         GetHashCode_returns_hash_value_derived_from_wrapped_value((111, "111"), (222, "222"));
-        GetHashCode_returns_hash_value_derived_from_wrapped_value((decimal)111, (decimal)222);
+        GetHashCode_returns_hash_value_derived_from_wrapped_value<decimal>(111, 222);
     }
 
     /// <summary>
-    ///   The <see cref="None{T}.GetHashCode"/> method returns a hash code computed
+    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
     ///   from the wrapped value for reference types.
     /// </summary>
     [TestMethod]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Globalization", "CA1307:Specify StringComparison for clarity",
-        Justification = "StringComparison cannot be used within Maybe<T>")]
     public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_reference_types() {
         GetHashCode_returns_hash_value_derived_from_wrapped_value("111", "222");
         GetHashCode_returns_hash_value_derived_from_wrapped_value(
@@ -495,7 +484,7 @@ public class HasValue_Property_Tests {
 
     #region test implementations
 
-    private static void HasValue_returns_true<T>(T value) where T: notnull {
+    private static void HasValue_returns_true<T>(T value) where T : notnull {
         var some = new Some<T>(value);
         Assert.IsTrue(some.HasValue);
     }
@@ -535,7 +524,7 @@ public class HasValue_Property_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Some{T}"/> methods and extention methods.
+///   Unit tests for <see cref="Some{T}"/> methods and extension methods.
 /// </summary>
 [TestClass]
 public class Value_Property_Tests {
@@ -578,5 +567,28 @@ public class Value_Property_Tests {
         Value_is_initialized_to_correct_value("111");
         Value_is_initialized_to_correct_value(new int[] { 111 });
         Value_is_initialized_to_correct_value(new TestClass(111, "111"));
+    }
+}
+
+/// <summary>
+///   Unit tests for the <see cref="Some{T}.ToString"/> method.
+/// </summary>
+[TestClass]
+public class ToString_Tests {
+
+    /// <summary>
+    ///   The <see cref="Some{T}.ToString"/> method returns the expected represention.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_ToString_creates_expected_representation() {
+        Assert.AreEqual("Some<TestEnum>(E11)", Maybe.Some(TestEnum.E11).ToString());
+        Assert.AreEqual("Some<Int32>(111)", Maybe.Some(111).ToString());
+        Assert.AreEqual("Some<ValueTuple`2>((111, 111))", Maybe.Some((111, "111")).ToString());
+        Assert.AreEqual("Some<Decimal>(111)", Maybe.Some((decimal)111).ToString());
+        Assert.AreEqual("Some<String>(111)", Maybe.Some("111").ToString());
+        Assert.AreEqual("Some<Int32[]>(System.Int32[])", Maybe.Some(new int[] { 111 }).ToString());
+        Assert.AreEqual(
+            "Some<TestClass>(TestClass { I = 111, S = 111 })",
+            Maybe.Some(new TestClass(111, "111")).ToString());
     }
 }

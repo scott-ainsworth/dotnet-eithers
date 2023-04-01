@@ -1,7 +1,5 @@
-#nullable enable
-
 using Ainsworth.Eithers;
-
+using System.Diagnostics.CodeAnalysis;
 using static Ainsworth.Eithers.Tests.TestData;
 
 namespace Maybe_Tests;
@@ -25,7 +23,20 @@ public class FromT_Method_Tests {
     }
 
     private static void Maybe_FromT_creates_Some_from_nullable_value<T>(T? value) where T : struct {
-        var maybe = Maybe.From<T>(value);
+        var maybe = Maybe.From(value);
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<Some<T>>(maybe);
+        var some = (maybe as Some<T>)!;
+        Assert.AreEqual(value, some.Value);
+    }
+
+    // Reference type versions
+
+    [SuppressMessage(
+        "Major Code Smell", "S4144:Methods should not have identical implementations",
+        Justification = "S4144 is incorrect because T type constraints differ")]
+    private static void Maybe_FromT_creates_Some_from_reference_value<T>(T? value) where T : class {
+        var maybe = Maybe.From(value);
         Assert.IsInstanceOfType<Maybe<T>>(maybe);
         Assert.IsInstanceOfType<Some<T>>(maybe);
         var some = (maybe as Some<T>)!;
@@ -33,24 +44,14 @@ public class FromT_Method_Tests {
     }
 
     private static void Maybe_FromT_creates_None_from_null<T>(T? value) where T : struct {
-        var maybe = Maybe.From<T>(value);
+        var maybe = Maybe.From(value);
         Assert.IsInstanceOfType<Maybe<T>>(maybe);
         Assert.IsInstanceOfType<None<T>>(maybe);
         Assert.AreSame(Maybe<T>.None, maybe);
     }
 
-    // Reference type versions
-
-    private static void Maybe_FromT_creates_Some_from_reference_value<T>(T? value) where T : class {
-        var maybe = Maybe.From<T>(value);
-        Assert.IsInstanceOfType<Maybe<T>>(maybe);
-        Assert.IsInstanceOfType<Some<T>>(maybe);
-        var some = (maybe as Some<T>)!;
-        Assert.AreEqual(value, some.Value);
-    }
-
     private static void Maybe_FromT_creates_None_from_null<T>(T? value) where T : class {
-        var maybe = Maybe.From<T>(value);
+        var maybe = Maybe.From(value);
         Assert.IsInstanceOfType<Maybe<T>>(maybe);
         Assert.IsInstanceOfType<None<T>>(maybe);
         Assert.AreSame(Maybe<T>.None, maybe);
@@ -152,16 +153,15 @@ public class SomeT_Method_Tests {
     // Value type versions
 
     private static void Maybe_SomeT_creates_Some_from_value<T>(T value) where T : notnull {
-        var maybe = Maybe.Some<T>(value);
+        var maybe = Maybe.Some(value);
         Assert.IsInstanceOfType<Maybe<T>>(maybe);
         Assert.IsInstanceOfType<Some<T>>(maybe);
         var some = (maybe as Some<T>)!;
         Assert.AreEqual(value, some.Value);
     }
 
-    private static void Maybe_SomeT_throws_for_null<T>() where T : class {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => Maybe.Some<T>(null!));
-    }
+    private static void Maybe_SomeT_throws_for_null<T>() where T : class =>
+        Assert.ThrowsException<ArgumentNullException>(() => Maybe.Some<T>(null!));
 
     #endregion
 
@@ -191,7 +191,7 @@ public class SomeT_Method_Tests {
     ///   correct wrapping the provided reference type value.
     /// </summary>
     [TestMethod]
-    public void Maybe_SomeT_creates_Some_for_referencetypes() {
+    public void Maybe_SomeT_creates_Some_for_reference_types() {
         Maybe_SomeT_creates_Some_from_value("111");
         Maybe_SomeT_creates_Some_from_value(new int[] { 111 });
         Maybe_SomeT_creates_Some_from_value(new TestClass(111, "111"));
@@ -203,8 +203,8 @@ public class SomeT_Method_Tests {
     ///   is <see langword="null"/>. 
     /// </summary>
     /// <remarks>
-    ///     <para>This condition will normally be caught by the C# ompler's null analysis,
-    ///   if nullable analysis is enabled (<c>#nullable endable</c>).  However, analysis
+    ///     <para>This condition will normally be caught by the C# compiler's null analysis,
+    ///   if nullable analysis is enabled (<c>#nullable enable</c>).  However, analysis
     ///   can not prevent <see cref="Maybe.Some{T}(T)"/> from being called with a
     ///   <see langword="null"/> value.</para>
     ///     <para>*Note*: This cannot happen for primitive and value types.</para>
@@ -218,23 +218,12 @@ public class SomeT_Method_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extention methods.
+///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extension methods.
 /// </summary>
 [TestClass]
 public class ToMaybeT_ExtensionMethod_Tests {
 
     #region test implementions
-
-    // Value type versions
-
-    private static void Maybe_ToMaybeT_creates_None_from_null<T>(T? value) where T : struct {
-        var maybe = value.ToMaybe();
-        Assert.IsInstanceOfType<Maybe<T>>(maybe);
-        Assert.IsInstanceOfType<None<T>>(maybe);
-        Assert.AreSame(Maybe<T>.None, maybe);
-    }
-
-    // Reference type versions
 
     private static void Maybe_ToMaybeT_creates_Some_from_reference_value<T>(T? value) where T : class {
         var maybe = value.ToMaybe();
@@ -242,6 +231,13 @@ public class ToMaybeT_ExtensionMethod_Tests {
         Assert.IsInstanceOfType<Some<T>>(maybe);
         var some = (maybe as Some<T>)!;
         Assert.AreEqual(value, some.Value);
+    }
+
+    private static void Maybe_ToMaybeT_creates_None_from_null<T>(T? value) where T : struct {
+        var maybe = value.ToMaybe();
+        Assert.IsInstanceOfType<Maybe<T>>(maybe);
+        Assert.IsInstanceOfType<None<T>>(maybe);
+        Assert.AreSame(Maybe<T>.None, maybe);
     }
 
     private static void Maybe_ToMaybeT_creates_None_from_null<T>(T? value) where T : class {
@@ -258,7 +254,10 @@ public class ToMaybeT_ExtensionMethod_Tests {
     ///   type wrapping the provided nullable primitive value.
     /// </summary>
     [TestMethod]
-    public void Maybe_ToMaybe_returns_Some_for_nullable_primitive_yypes() {
+    [SuppressMessage(
+        "Blocker Code Smell", "S2699:Tests should include assertions",
+        Justification = "This method simply provides documentation for the next developer")]
+    public void Maybe_ToMaybe_returns_Some_for_nullable_primitive_types() {
         // This is not possible. Use ToSome<T>(T) instead.
     }
 
@@ -267,6 +266,9 @@ public class ToMaybeT_ExtensionMethod_Tests {
     ///   type wrapping the provided nullable value type value.
     /// </summary>
     [TestMethod]
+    [SuppressMessage(
+        "Blocker Code Smell", "S2699:Tests should include assertions",
+        Justification = "This method simply provides documentation for the next developer")]
     public void Maybe_ToMaybe_returns_Some_for_nullable_value_types() {
         // This is not possible. Use ToSome<T>(T) instead.
     }
@@ -277,9 +279,9 @@ public class ToMaybeT_ExtensionMethod_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_ToMaybe_returns_Some_for_nullable_reference_types() {
-        Maybe_ToMaybeT_creates_Some_from_reference_value<string>("111");
-        Maybe_ToMaybeT_creates_Some_from_reference_value<int[]>(new int[] { 111 });
-        Maybe_ToMaybeT_creates_Some_from_reference_value<TestClass>(new TestClass(111, "111"));
+        Maybe_ToMaybeT_creates_Some_from_reference_value("111");
+        Maybe_ToMaybeT_creates_Some_from_reference_value(new int[] { 111 });
+        Maybe_ToMaybeT_creates_Some_from_reference_value(new TestClass(111, "111"));
     }
 
     /// <summary>
@@ -315,7 +317,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extention methods.
+///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extension methods.
 /// </summary>
 [TestClass]
 public class ToSomeT_ExtensionMethod_Tests {
@@ -323,16 +325,14 @@ public class ToSomeT_ExtensionMethod_Tests {
     #region test implementions
 
     private static void Maybe_ToSomeT_creates_Some_from_value<T>(T value) where T : notnull {
-        var maybe = value.ToSome();
-        Assert.IsInstanceOfType<Maybe<T>>(maybe);
-        Assert.IsInstanceOfType<Some<T>>(maybe);
-        var some = (maybe as Some<T>)!;
+        var some = value.ToSome();
+        Assert.IsInstanceOfType<Maybe<T>>(some);
+        Assert.IsInstanceOfType<Some<T>>(some);
         Assert.AreEqual(value, some.Value);
     }
 
-    private static void Maybe_ToSomeT_throws_for_null<T>() where T : class {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => ((T)null!).ToSome());
-    }
+    private static void Maybe_ToSomeT_throws_for_null<T>() where T : class =>
+        Assert.ThrowsException<ArgumentNullException>(() => ((T)null!).ToSome());
 
     #endregion
 
@@ -362,7 +362,7 @@ public class ToSomeT_ExtensionMethod_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_ToSome_returns_Some_for_reference_types() {
-        Maybe_ToSomeT_creates_Some_from_value<string>("111");
+        Maybe_ToSomeT_creates_Some_from_value("111");
         Maybe_ToSomeT_creates_Some_from_value(new int[] { 111 });
         Maybe_ToSomeT_creates_Some_from_value(new TestClass(111, "111"));
     }
@@ -373,8 +373,8 @@ public class ToSomeT_ExtensionMethod_Tests {
     ///   is <see langword="null"/>. 
     /// </summary>
     /// <remarks>
-    ///     <para>This condition will normally be caught by the C# ompler's null analysis,
-    ///   if nullable analysis is enabled (<c>#nullable endable</c>).  However, analysis
+    ///     <para>This condition will normally be caught by the C# compiler's null analysis,
+    ///   if nullable analysis is enabled (<c>#nullable enable</c>).  However, analysis
     ///   can not prevent <see cref="Maybe.Some{T}(T)"/> from being called with a
     ///   <see langword="null"/> value.</para>
     ///     <para>*Note*: This cannot happen for primitive and value types.</para>

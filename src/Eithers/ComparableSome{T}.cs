@@ -1,5 +1,3 @@
-//#nullable enable
-
 //using System;
 //using System.Collections.Generic;
 
@@ -17,7 +15,7 @@
 //    public static implicit operator T(ComparableSome<T> some) => some.Value;
 
 //    #endregion
-//    #region IComparible<T> Implementation
+//    #region IComparable<T> Implementation
 
 //    public int CompareTo(IComparableMaybe<T> other) =>
 //        other is Some <T> s ? CompareTo(s.Value) : -1;

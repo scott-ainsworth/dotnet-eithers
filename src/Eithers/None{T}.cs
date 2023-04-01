@@ -1,10 +1,10 @@
-#nullable enable
-
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ainsworth.Eithers;
+
+#pragma warning disable CS0659  // Covered by SonarLint S1206
 
 /// <summary>
 ///   The subclass of <see cref="Maybe{T}"/> that represents a Maybe monad
@@ -13,7 +13,10 @@ namespace Ainsworth.Eithers;
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("None")]
-public class None<T> : Maybe<T> 
+[SuppressMessage(
+    "Minor Bug", "S1206:\"Equals(Object)\" and \"GetHashCode()\" should be overridden in pairs",
+    Justification = "base.GetHasCode() provides correct implementation")]
+public class None<T> : Maybe<T>
     where T : notnull {
 
     #region Properties
@@ -42,15 +45,24 @@ public class None<T> : Maybe<T>
     private None() { }
 
     #endregion
-    #region IEquatable<T> Implementation
-
-    // Note: IEquatable implementation inherited from Maybe<T>
+    #region IEquatable<T> and IEquatable<Maybe<T>> Implementations
 
     /// <inheritdoc/>
     public override bool Equals(T other) => false;
 
     /// <inheritdoc/>
-    public override bool Equals(Maybe<T> other) => other == Maybe<T>.None;
+    public override bool Equals(Maybe<T> other) => other == NoneSingleton;
+
+    /// <summary>
+    ///   Returns a value indicating whether this instance's wrapped value is equal to
+    ///   the specified object.
+    /// </summary>
+    /// <param name="obj">An object to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if <paramref name="obj"/> is the <see cref="None{T}"/>
+    ///   singleton; otherwise, <see langword="false"/>.
+    /// </returns>
+    public override bool Equals(object obj) => obj == NoneSingleton;
 
     #endregion
     #region IEnumerable<T> Implementation
@@ -63,8 +75,14 @@ public class None<T> : Maybe<T>
     #endregion
     #region System.Object overrides
 
-    /// <inheritdoc/>
-    public override int GetHashCode() => base.GetHashCode();
+    /// <summary>
+    ///   Returns a string representation of this <see cref="None{T}"/>.
+    /// </summary>
+    /// <returns>
+    ///  A string that represents this <see cref="None{T}"/>.
+    /// </returns>
+    public override string ToString() =>
+        $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(Maybe<T>.None)}";
 
     #endregion
 }

@@ -1,5 +1,3 @@
-//#nullable enable
-
 //using System;
 
 //namespace Ainsworth.Eithers;
@@ -17,7 +15,7 @@
 //    protected ComparableNone() { }
 
 //    #endregion
-//    #region IComparible<T> Implementation
+//    #region IComparable<T> Implementation
 
 //    public int CompareTo(IComparableMaybe<T> other) => other.IsNone ? 0 : -1;
 

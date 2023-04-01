@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 
 namespace Ainsworth.Eithers;
@@ -21,9 +19,7 @@ public static class Maybe {
     ///   <see cref="Maybe{T}.None"/> singleton is returned. 
     /// </returns>
     public static Maybe<T> From<T>(T? value) where T : struct =>
-        value is T v
-            ? new Some<T>(v)
-            : Maybe<T>.None;
+        value is T v ? new Some<T>(v) : Maybe<T>.None;
 
     /// <summary>
     ///   Create a <see cref="Maybe{T}"/> from a specified value.
@@ -37,9 +33,7 @@ public static class Maybe {
     ///   <see cref="Maybe{T}.None"/> singleton is returned. 
     /// </returns>
     public static Maybe<T> From<T>(T? value) where T : class =>
-        value is not null
-            ? new Some<T>(value)
-            : Maybe<T>.None;
+        value is not null ? new Some<T>(value) : Maybe<T>.None;
 
     /// <summary>
     ///   Create a <see cref="Maybe{T}"/> from a specified, non-<see langword="null"/> value.
@@ -51,7 +45,8 @@ public static class Maybe {
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
     public static Maybe<T> Some<T>(T value) where T : notnull =>
-        value is null // Null check for callers that don't use code analyzers to catch errors
+        // Null check for callers that don't use code analyzers to catch errors
+        value is null
             ? throw new ArgumentNullException(nameof(value))
             : new Some<T>(value);
 
@@ -66,7 +61,7 @@ public static class Maybe {
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
-    public static Maybe<T> ToMaybe<T>(this T? value) where T : struct => From<T>(value);
+    public static Maybe<T> ToMaybe<T>(this T? value) where T : struct => From(value);
 
     /// <summary>
     ///   Convert a possibly-<see langword="null"/> value to a <see cref="Maybe{T}"/>.
@@ -79,7 +74,7 @@ public static class Maybe {
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
-    public static Maybe<T> ToMaybe<T>(this T? value) where T : class => From<T>(value);
+    public static Maybe<T> ToMaybe<T>(this T? value) where T : class => From(value);
 
     /// <summary>
     ///   Convert a non-<see langword="null"/> value to a <see cref="Some{T}"/>.
