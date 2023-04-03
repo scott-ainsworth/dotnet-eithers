@@ -1,594 +1,316 @@
+using System.Collections;
 using System.Reflection;
 
-using Ainsworth.Eithers;
+using static Ainsworth.Eithers.Tests.TestRunner;
 
-using static Ainsworth.Eithers.Tests.TestData;
+// Disable SonarLint S2699 because most assertions are in called subroutines.
+#pragma warning disable S2699 // Test should include assertions
 
-namespace SomeT_Tests;
-
-/// <summary>
-///   Unit tests for the <see cref="Some{T}"/> casts.
-/// </summary>
-[TestClass]
-public class Cast_Tests {
-
-    #region test implementations
-
-    private static void SomeT_case_creates_Some_from_value<T>(T value) where T : notnull {
-
-        // explicit cast
-        var some = (Some<T>)value;
-        Assert.IsInstanceOfType<Some<T>>(some);
-        Assert.IsInstanceOfType<Maybe<T>>(some);
-        Assert.AreEqual(value, some.Value);
-
-        // implicit cast
-        Some<T> some2 = value;
-        Assert.IsInstanceOfType<Some<T>>(some2);
-        Assert.IsInstanceOfType<Maybe<T>>(some2);
-        Assert.AreEqual(value, some2.Value);
-    }
-
-    #endregion
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> cast creates the correct type
-    ///   and wraps the correct value for primitive types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_cast_creates_correct_SomeT_for_primitive_types() {
-        SomeT_case_creates_Some_from_value(TestEnum.E11);
-        SomeT_case_creates_Some_from_value(111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> cast creates the correct type
-    ///   and wraps the correct value for value types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_cast_creates_correct_SomeT_for_value_types() {
-        SomeT_case_creates_Some_from_value((111, "111"));
-        SomeT_case_creates_Some_from_value((decimal)111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> cast creates the correct type
-    ///   and wraps the correct value for reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_cast_creates_correct_SomeT_reference_types() {
-        SomeT_case_creates_Some_from_value("111");
-        SomeT_case_creates_Some_from_value(new int[] { 111 });
-        SomeT_case_creates_Some_from_value(new TestClass(111, "111"));
-    }
-}
+namespace Ainsworth.Eithers.Tests.SomeTTests;
 
 /// <summary>
-///   Unit tests for the <see cref="Some{T}"/> constructors.
+///   Unit tests for <see cref="Maybe{T}"/> casts.
 /// </summary>
 [TestClass]
-public class Constructor_Tests {
-
-    #region test implementations
-
-    private static void SomeT_constructor_creates_SomeT<T>(T value) where T : notnull {
-        var some = new Some<T>(value);
-        Assert.IsInstanceOfType<Some<T>>(some);
-        Assert.IsInstanceOfType<Maybe<T>>(some);
-        Assert.AreEqual(value, some.Value);
-    }
-
-    private static void SomeT_constructor_throws_for_null<T>() where T : class =>
-        Assert.ThrowsException<ArgumentNullException>(() => new Some<T>(null!));
-
-    #endregion
+public class SomeT_Constructor_Tests {
 
     /// <summary>
     ///   The <see cref="Some{T}"/> constructors' visibility is not public.
     /// </summary>
     [TestMethod]
-    public void SomeT_constructors_are_protected_or_internal() {
-        var type = typeof(Some<int>);
-        var constructors = type.GetConstructors(
-            BindingFlags.Public | BindingFlags.NonPublic |
-            BindingFlags.Instance | BindingFlags.Static);
-        foreach (var constructor in constructors) {
-            // It
-            Assert.IsFalse(
-                constructor.IsPublic,
-                $"{constructor.DeclaringType!.Name} has at least 1 public constructor");
+    public void SomeT_constructors_are_all_protected() =>
+        RunTestCases(new SomeT_Constructors_are_not_public());
+    private sealed class SomeT_Constructors_are_not_public : ITestCase0 {
+        public void RunTestCase<T>() where T : notnull {
+            var constructors = typeof(Maybe<T>).GetConstructors(
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            Assert.IsFalse(constructors.Any(), $"{typeof(T)} has at least 1 public constructor");
+        }
+    }
+}
+
+/// <summary>
+///   Unit test for <see cref="Some{T}.Equals(Maybe{T})"/> tests.
+/// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Blocker Code Smell", "S2187:TestCases should contain tests",
+    Justification = "Tests are in subclasses. This is an audit trail.")]
+[TestClass]
+public class SomeT_EqualsMaybeT_Tests {
+
+    /// <summary>
+    ///  The <see cref="Maybe{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
+    ///  not equal values.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_EqualsMaybeT_returns_false_for_not_equal_values() =>
+        RunTestCases(new EqualsMaybeT_returns_false_for_not_equal_values());
+    private sealed class EqualsMaybeT_returns_false_for_not_equal_values : ITestCase2 {
+        public void RunTestCase<T>(T value, T value2) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Maybe<T> maybe2 = Maybe.Some(value2);
+            Assert.IsFalse(maybe.Equals(maybe2));
         }
     }
 
     /// <summary>
-    ///   The <see cref="Some{T}"/> constructor creates the correct <see cref="Some{T}"/>
-    ///   and wraps the correct value for primitive types.
+    ///  The <see cref="Some{T}.Equals(Maybe{T})"/> method returns <see langword="false"/> None.
     /// </summary>
     [TestMethod]
-    public void SomeT_constructor_creates_SomeT_for_primitive_types() {
-        SomeT_constructor_creates_SomeT(TestEnum.E11);
-        SomeT_constructor_creates_SomeT(111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> constructor creates the correct <see cref="Some{T}"/>
-    ///   and wraps the correct value for value types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_constructor_creates_SomeT_for_value_types() {
-        SomeT_constructor_creates_SomeT((111, "111"));
-        SomeT_constructor_creates_SomeT((decimal)111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> constructor creates the correct <see cref="Some{T}"/>
-    ///   and wraps the correct value for reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_constructor_creates_SomeT_for_reference_types() {
-        SomeT_constructor_creates_SomeT("111");
-        SomeT_constructor_creates_SomeT(new int[] { 111 });
-        SomeT_constructor_creates_SomeT(new TestClass(111, "111"));
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}"/> constructor throws <see cref="ArgumentNullException"/>
-    ///   for null reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_constructor_throws_for_null_reference_types() {
-        SomeT_constructor_throws_for_null<string>();
-        SomeT_constructor_throws_for_null<int[]>();
-        SomeT_constructor_throws_for_null<TestClass>();
-    }
-}
-
-/// <summary>
-///   Unit tests for the <see cref="Some{T}.Equals(T)"/> methods.
-/// </summary>
-[TestClass]
-public class EqualsT_Method_Tests {
-
-    #region test implementations
-
-    private static void EqualsT_returns_true_for_same_value<T>(T value)
-            where T : notnull {
-        var some = new Some<T>(value);
-        Assert.IsTrue(some.Equals(value));
-    }
-
-    private static void EqualsT_returns_true_for_different_value<T>(T value, T value2)
-            where T : notnull {
-        var some = new Some<T>(value);
-        Assert.IsFalse(some.Equals(value2));
-    }
-
-    #endregion
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for primitive types with the same value.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_true_for_primitive_types_with_the_same_value() {
-        EqualsT_returns_true_for_same_value(TestEnum.E11);
-        EqualsT_returns_true_for_same_value(111);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for value types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_true_for_value_types_with_the_same_value() {
-        EqualsT_returns_true_for_same_value((111, "111"));
-        EqualsT_returns_true_for_same_value((decimal)111);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for reference types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_true_for_reference_types_with_the_same_value() {
-
-        // Note: string overrides Equals to compare by value.
-        // All other reference types compare by reference.
-
-        EqualsT_returns_true_for_same_value("111");
-        EqualsT_returns_true_for_same_value(new int[] { 111 });
-        EqualsT_returns_true_for_same_value(new TestClass(111, "111"));
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for primitive types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_false_for_primitive_types_with_different_value() {
-        EqualsT_returns_true_for_different_value(111, 222);
-        EqualsT_returns_true_for_different_value(TestEnum.E11, TestEnum.E22);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for value types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_false_for_value_types_with_the_different_value() {
-        EqualsT_returns_true_for_different_value((111, "111"), (222, "222"));
-        EqualsT_returns_true_for_different_value<decimal>(111, 222);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for reference types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsT_returns_false_for_reference_types_with_the_different_value() {
-
-        // Note: string overrides Equals to compare by value.
-        // All other reference types compare by reference.
-
-        EqualsT_returns_true_for_different_value("111", "222");
-        EqualsT_returns_true_for_different_value(new int[] { 111 }, new int[] { 222 });
-        EqualsT_returns_true_for_different_value(
-            new TestClass(111, "111"), new TestClass(222, "222"));
-    }
-}
-
-/// <summary>
-///   Unit tests for the <see cref="Some{T}.Equals(Maybe{T})"/> methods.
-/// </summary>
-[TestClass]
-public class Equals_MaybeT_Method_Tests {
-
-    #region test implementations
-
-    private static void Equals_MaybeT_returns_true_for_same_value<T>(T value) where T : notnull {
-        var maybe = new Some<T>(value);
-        var maybe2 = new Some<T>(value);
-        Assert.IsTrue(maybe.Equals(maybe2));
-    }
-
-    private static void Equals_MaybeT_returns_false_for_different_value<T>(T value, T value2)
-            where T : notnull {
-        var maybe = new Some<T>(value);
-        var maybe2 = new Some<T>(value2);
-        Assert.IsFalse(maybe.Equals(maybe2));
-    }
-
-    private static void Equals_MaybeT_returns_false_for_None<T>(T value)
-            where T : notnull {
-        var maybe = new Some<T>(value);
-        Assert.IsFalse(maybe.Equals(Maybe<T>.None));
-    }
-
-    #endregion
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for primitive types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_true_for_primitive_type_with_the_same_value() {
-        Equals_MaybeT_returns_true_for_same_value(111);
-        Equals_MaybeT_returns_true_for_same_value(TestEnum.E11);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for value types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_true_for_value_type_with_the_same_value() {
-        Equals_MaybeT_returns_true_for_same_value((111, "111"));
-        Equals_MaybeT_returns_true_for_same_value((decimal)111);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
-    ///  for reference types with the same values.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_true_for_reference_type_with_the_same_value() {
-
-        // Note: string overrides Equals to compare by value.
-        // All other reference types compare by reference.
-
-        Equals_MaybeT_returns_true_for_same_value("111");
-        Equals_MaybeT_returns_true_for_same_value(new int[] { 111 });
-        Equals_MaybeT_returns_true_for_same_value(new TestClass(111, "111"));
+    public void SomeT_EqualsMaybeT_returns_false_None() =>
+        RunTestCases(new EqualsMaybeT_returns_false_for_None());
+    private sealed class EqualsMaybeT_returns_false_for_None : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var maybe = Maybe.Some(value);
+            Assert.IsFalse(maybe.Equals(Maybe<T>.None));
+        }
     }
 
     /// <summary>
     ///  The <see cref="Some{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
-    ///  for primitive types with the different value.
+    ///  for <see langword="null"/>.
     /// </summary>
     [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_primitive_type_with_the_different_value() {
-        Equals_MaybeT_returns_false_for_different_value(111, 222);
-        Equals_MaybeT_returns_false_for_different_value(TestEnum.E11, TestEnum.E22);
+    public void SomeT_EqualsMaybeT_returns_false_for_null() =>
+        RunTestCases(new EqualsMaybeT_returns_false_for_null());
+    private sealed class EqualsMaybeT_returns_false_for_null : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var maybe = Maybe.Some<T>(value);
+            Assert.IsFalse(maybe.Equals(null!));
+        }
     }
 
     /// <summary>
-    ///  The <see cref="Some{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
-    ///  for value types with the different value.
+    ///  The <see cref="Maybe{T}.Equals(Maybe{T})"/> method returns <see langword="true"/>
+    ///  for equal values.
     /// </summary>
     [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_value_type_with_the_different_value() {
-        Equals_MaybeT_returns_false_for_different_value((111, "111"), (222, "222"));
-        Equals_MaybeT_returns_false_for_different_value<decimal>(111, 222);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
-    ///  for reference types with the different value.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_reference_type_with_the_different_value() {
-
-        // Note: string overrides Equals to compare by value.
-        // All other reference types compare by reference.
-
-        Equals_MaybeT_returns_false_for_different_value("111", "222");
-        Equals_MaybeT_returns_false_for_different_value(new int[] { 111 }, new int[] { 222 });
-        Equals_MaybeT_returns_false_for_different_value(
-            new TestClass(111, "111"), new TestClass(222, "222"));
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="false"/>
-    ///  for primitive type <see cref="Maybe{T}.None"/>.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_primitive_types_with_no_value() {
-        Equals_MaybeT_returns_false_for_None(111);
-        Equals_MaybeT_returns_false_for_None(TestEnum.E11);
-    }
-
-    /// <summary>
-    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="false"/>
-    ///  for value type <see cref="Maybe{T}.None"/>.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_value_types_with_no_value() {
-        Equals_MaybeT_returns_false_for_None((111, "111"));
-        Equals_MaybeT_returns_false_for_None((decimal)111);
-    }
-
-    /// <summary>
-    ///  The <see cref="None{T}.Equals(T)"/> method returns <see langword="false"/>
-    ///  for reference type <see cref="Maybe{T}.None"/>.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_EqualsMaybeT_returns_false_for_reference_types_with_no_value() {
-
-        // Note: string overrides Equals to compare by value.
-        // All other reference types compare by reference.
-
-        Equals_MaybeT_returns_false_for_None("111");
-        Equals_MaybeT_returns_false_for_None(new int[] { 111 });
-        Equals_MaybeT_returns_false_for_None(new TestClass(111, "111"));
+    public void SomeT_EqualsMaybeT_returns_true_for_equal_values() =>
+        RunTestCases(new EqualsMaybeT_returns_true_for_equal_values());
+    private sealed class EqualsMaybeT_returns_true_for_equal_values : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Maybe<T> maybe2 = Maybe.Some(value);
+            Assert.IsTrue(maybe.Equals(maybe2));
+        }
     }
 }
 
 /// <summary>
-///   Unit tests for the <see cref="Some{T}.GetEnumerator"/> method.
+///   Unit test for <see cref="Some{T}"/>.Equals(object) tests.
 /// </summary>
 [TestClass]
-public class GetEnumerator_Method_Tests {
-
-    #region test implementaions
-
-    private static void GetEnumerator_returns_correct_enumerator<T>(T value) where T : notnull {
-        var some = new Some<T>(value);
-        var enumerator = some.GetEnumerator();
-        Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
-        Assert.IsTrue(enumerator.MoveNext());
-        Assert.AreEqual(value, enumerator.Current);
-        Assert.IsFalse(enumerator.MoveNext());
-    }
-
-    #endregion
+public class SomeT_EqualsObject_Tests {
 
     /// <summary>
-    ///   The <see cref="Some{T}.GetEnumerator"/> methods return a correct
-    ///   <see cref="IEnumerator{T}"/> for a primitive types.
+    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  not equal values.
     /// </summary>
     [TestMethod]
-    public void SomeT_GetEnumerator_returns_correct_enumerator_for_primitive_types() {
-        GetEnumerator_returns_correct_enumerator(111);
-        GetEnumerator_returns_correct_enumerator(TestEnum.E11);
+    public void SomeT_EqualsObject_returns_false_for_not_equal_SomeT_value() =>
+        RunTestCases(new EqualsObject_returns_false_for_not_equal_SomeT_value());
+    private sealed class EqualsObject_returns_false_for_not_equal_SomeT_value : ITestCase2 {
+        public void RunTestCase<T>(T value, T value2) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Maybe<T> maybe2 = Maybe.Some(value2);
+            Assert.IsFalse(maybe.Equals((object)maybe2));
+        }
     }
 
     /// <summary>
-    ///   The <see cref="Some{T}.GetEnumerator"/> methods return a correct
-    ///   <see cref="IEnumerator{T}"/> for a primitive types.
+    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  not equal values.
     /// </summary>
     [TestMethod]
-    public void SomeT_GetEnumerator_returns_correct_enumerator_for_value_types() {
-        GetEnumerator_returns_correct_enumerator((111, "111"));
-        GetEnumerator_returns_correct_enumerator((decimal)111);
+    public void SomeT_EqualsObject_returns_false_for_not_equal_value() =>
+        RunTestCases(new EqualsObject_returns_false_for_not_equal_value());
+    private sealed class EqualsObject_returns_false_for_not_equal_value : ITestCase2 {
+        public void RunTestCase<T>(T value, T value2) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Assert.IsFalse(maybe.Equals((object)value2));
+        }
     }
 
     /// <summary>
-    ///   The <see cref="Some{T}.GetEnumerator"/> methods return a correct
-    ///   <see cref="IEnumerator{T}"/> for a primitive types.
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="false"/> None.
     /// </summary>
     [TestMethod]
-    public void SomeT_GetEnumerator_returns_correct_enumerator_for_reference_types() {
-        GetEnumerator_returns_correct_enumerator("111");
-        GetEnumerator_returns_correct_enumerator(new int[] { 111 });
-        GetEnumerator_returns_correct_enumerator(new TestClass(111, "111"));
+    public void SomeT_EqualsObject_returns_false_None() =>
+        RunTestCases(new EqualsObject_returns_false_for_None());
+    private sealed class EqualsObject_returns_false_for_None : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var maybe = Maybe.Some(value);
+            Assert.IsFalse(maybe.Equals((Object)Maybe<T>.None));
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  for <see langword="null"/>.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_EqualsObject_returns_false_for_null() =>
+        RunTestCases(new EqualsObject_returns_false_for_null());
+    private sealed class EqualsObject_returns_false_for_null : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var maybe = Maybe.Some<T>(value);
+            Assert.IsFalse(maybe.Equals((Object)null!));
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  for equal value wrapped in <see cref="Some{T}"/>.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_EqualsObject_returns_true_for_equal_SomeT_value() =>
+        RunTestCases(new EqualsObject_returns_true_for_equal_SomeT_value());
+    private sealed class EqualsObject_returns_true_for_equal_SomeT_value : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Maybe<T> maybe2 = Maybe.Some(value);
+            Assert.IsTrue(maybe.Equals((object)maybe2));
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  for equal values.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_EqualsObject_returns_true_for_equal_value() =>
+        RunTestCases(new EqualsObject_returns_true_for_equal_value());
+    private sealed class EqualsObject_returns_true_for_equal_value : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Assert.IsTrue(maybe.Equals((object)value));
+        }
     }
 }
 
 /// <summary>
-///   Unit tests for <see cref="Some{T}"/> methods and extension methods.
+///   Unit test for <see cref="Maybe{T}.Equals(T)"/> tests.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Blocker Code Smell", "S2187:TestCases should contain tests",
+    Justification = "Tests are in subclasses. This is an audit trail.")]
 [TestClass]
-public class GetHashCode_Method_Tests {
-
-    #region teset implementations
-
-    private static void GetHashCode_returns_hash_value_derived_from_wrapped_value<T>(
-            T value, T value2)
-            where T : notnull {
-        var maybe = new Some<T>(value);
-        Assert.AreEqual(value.GetHashCode(), maybe.GetHashCode());
-        Assert.AreNotEqual(value2.GetHashCode(), maybe.GetHashCode());
-    }
-
-    #endregion
+public class SomeT_EqualsT_Tests {
 
     /// <summary>
-    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
-    ///   from the wrapped value for primitive type.
+    ///  The <see cref="Maybe{T}.Equals(T)"/> method returns <see langword="false"/>
+    ///  not equal values.
     /// </summary>
     [TestMethod]
-    public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_primitive_types() {
-        GetHashCode_returns_hash_value_derived_from_wrapped_value(111, 222);
-        GetHashCode_returns_hash_value_derived_from_wrapped_value(TestEnum.E11, TestEnum.E22);
+    public void SomeT_EqualsT_returns_false_for_not_equal_values() =>
+        RunTestCases(new EqualsT_returns_false_for_not_equal_values());
+    private sealed class EqualsT_returns_false_for_not_equal_values : ITestCase2 {
+        public void RunTestCase<T>(T value, T value2) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Assert.IsFalse(maybe.Equals(value2));
+        }
     }
 
     /// <summary>
-    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
-    ///   from the wrapped value for value types.
+    ///  The <see cref="Maybe{T}.Equals(T)"/> method returns <see langword="true"/>
+    ///  for equal values.
     /// </summary>
     [TestMethod]
-    public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_value_types() {
-        GetHashCode_returns_hash_value_derived_from_wrapped_value((111, "111"), (222, "222"));
-        GetHashCode_returns_hash_value_derived_from_wrapped_value<decimal>(111, 222);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}.GetHashCode"/> method returns a hash code computed
-    ///   from the wrapped value for reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_GetHashCode_returns_hash_value_derived_from_wrapped_value_for_reference_types() {
-        GetHashCode_returns_hash_value_derived_from_wrapped_value("111", "222");
-        GetHashCode_returns_hash_value_derived_from_wrapped_value(
-            new int[] { 111 }, new int[] { 222 });
-        GetHashCode_returns_hash_value_derived_from_wrapped_value(
-            new TestClass(111, "111"), new TestClass(222, "222"));
+    public void SomeT_EqualsT_returns_true_for_equal_values() =>
+        RunTestCases(new EqualsT_returns_true_for_equal_values());
+    private sealed class EqualsT_returns_true_for_equal_values : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            Maybe<T> maybe = Maybe.Some(value);
+            Assert.IsTrue(maybe.Equals(value));
+        }
     }
 }
 
 /// <summary>
-///   Unit tests for the <see cref="Some{T}.HasValue"/> property.
+///   Unit test for <see cref="Maybe{T}.GetEnumerator"/> tests.
 /// </summary>
 [TestClass]
-public class HasValue_Property_Tests {
-
-    #region test implementations
-
-    private static void HasValue_returns_true<T>(T value) where T : notnull {
-        var some = new Some<T>(value);
-        Assert.IsTrue(some.HasValue);
-    }
-
-    #endregion
+public class SomeT_GetEnumerator_Tests {
 
     /// <summary>
-    ///   The <see cref="Some{T}.HasValue"/> property returns <see langword="true"/>
-    ///   for primitive types.
+    ///   The <see cref="Maybe{T}.GetEnumerator"/> methods return a correct
+    ///   <see cref="IEnumerator{T}"/> for a <see cref="Some{T}"/>.
     /// </summary>
     [TestMethod]
-    public void SomeT_HasValue_returns_true_for_primitive_types() {
-        HasValue_returns_true(111);
-        HasValue_returns_true(TestEnum.E11);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}.HasValue"/> property returns <see langword="true"/>
-    ///   for value types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_HasValue_returns_true_for_value_types() {
-        HasValue_returns_true((111, "111"));
-        HasValue_returns_true((decimal)111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}.HasValue"/> property returns <see langword="true"/>
-    ///   for reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_HasValue_returns_true_for_reference_types() {
-        HasValue_returns_true("111");
-        HasValue_returns_true(new int[] { 111 });
-        HasValue_returns_true(new TestClass(111, "111"));
+    public void SomeT_GetEnumerator_returns_correct_enumerator() =>
+        RunTestCases(new GetEnumerator_returns_correct_enumerator());
+    private sealed class GetEnumerator_returns_correct_enumerator : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var enumerator = Maybe.Some(value).GetEnumerator();
+            Assert.IsInstanceOfType<IEnumerator>(enumerator);
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.AreEqual(value, enumerator.Current);
+            Assert.IsFalse(enumerator.MoveNext());
+        }
     }
 }
 
 /// <summary>
-///   Unit tests for <see cref="Some{T}"/> methods and extension methods.
+///   Unit tests for <see cref="Maybe{T}"/>.GetHashCode().
 /// </summary>
+/// <remarks>
+///   <see cref="Maybe{T}"/> does not override <see cref="object.GetHashCode"/>; however,
+///   <see cref="Some{T}"/> and <see cref="None{T}"/> do.  These test cases show that
+///   the <see cref="object.GetHashCode"/> overrides calculate the expected hash code.
+/// </remarks>
 [TestClass]
-public class Value_Property_Tests {
-
-    #region
-
-    private static void Value_is_initialized_to_correct_value<T>(T value) where T : notnull {
-        var some = new Some<T>(value);
-        Assert.AreEqual(value, some.Value);
-    }
-
-    #endregion
+public class SomeT_GetHashCode_Tests {
 
     /// <summary>
-    ///   The <see cref="Some{T}.Value"/> property returns the value provided to
-    ///   the constructor for primitive types.
+    ///   The <see cref="object.GetHashCode"/> method returns the correct value
+    ///   for primitive type values.
     /// </summary>
     [TestMethod]
-    public void SomeT_Value_is_initialized_to_correct_value_for_primitive_types() {
-        Value_is_initialized_to_correct_value(111);
-        Value_is_initialized_to_correct_value(TestEnum.E11);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}.Value"/> property returns the value provided to
-    ///   the constructor for value types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_Value_is_initialized_to_correct_value_for_value_types() {
-        Value_is_initialized_to_correct_value((111, "111"));
-        Value_is_initialized_to_correct_value((decimal)111);
-    }
-
-    /// <summary>
-    ///   The <see cref="Some{T}.Value"/> property returns the value provided to
-    ///   the constructor for reference types.
-    /// </summary>
-    [TestMethod]
-    public void SomeT_Value_is_initialized_to_correct_value_for_reference_types() {
-        Value_is_initialized_to_correct_value("111");
-        Value_is_initialized_to_correct_value(new int[] { 111 });
-        Value_is_initialized_to_correct_value(new TestClass(111, "111"));
+    public void SomeT_GetHashCode_returns_correct_value() =>
+        RunTestCases(new GetHashCode_returns_correct_value());
+    private sealed class GetHashCode_returns_correct_value : ITestCase2 {
+        public void RunTestCase<T>(T value, T value2) where T : notnull {
+            var maybe = Maybe.Some(value);
+            Assert.AreEqual(value.GetHashCode(), maybe.GetHashCode());
+            Assert.AreNotEqual(value2.GetHashCode(), maybe.GetHashCode());
+        }
     }
 }
 
 /// <summary>
-///   Unit tests for the <see cref="Some{T}.ToString"/> method.
+///   Unit test for <see cref="Maybe{T}.HasValue"/> tests.
 /// </summary>
 [TestClass]
-public class ToString_Tests {
+public class SomeT_HasValue_Property_Tests {
 
     /// <summary>
-    ///   The <see cref="Some{T}.ToString"/> method returns the expected represention.
+    ///   The <see cref="Some{T}.HasValue"/> property returns <see langword="true"/>.
     /// </summary>
     [TestMethod]
-    public void NoneT_ToString_creates_expected_representation() {
-        Assert.AreEqual("Some<TestEnum>(E11)", Maybe.Some(TestEnum.E11).ToString());
-        Assert.AreEqual("Some<Int32>(111)", Maybe.Some(111).ToString());
-        Assert.AreEqual("Some<ValueTuple`2>((111, 111))", Maybe.Some((111, "111")).ToString());
-        Assert.AreEqual("Some<Decimal>(111)", Maybe.Some((decimal)111).ToString());
-        Assert.AreEqual("Some<String>(111)", Maybe.Some("111").ToString());
-        Assert.AreEqual("Some<Int32[]>(System.Int32[])", Maybe.Some(new int[] { 111 }).ToString());
-        Assert.AreEqual(
-            "Some<TestClass>(TestClass { I = 111, S = 111 })",
-            Maybe.Some(new TestClass(111, "111")).ToString());
+    public void SomeT_HasValue_returns_true() =>
+        RunTestCases(new HasValue_returns_false());
+    private sealed class HasValue_returns_false : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull {
+            var maybe = Maybe.Some(value);
+            Assert.IsTrue(maybe.HasValue);
+        }
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Maybe{T}"/> casts.
+/// </summary>
+[TestClass]
+public class SomeT_ToString_Tests {
+
+    /// <summary>
+    ///   The <see cref="Some{T}.ToString"/> method creates the expected reprsentation.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_ToString_creates_correct_representation_for_SomeTs() =>
+        RunTestCases(new ToString_creates_correct_representation_for_SomeT());
+    private sealed class ToString_creates_correct_representation_for_SomeT : ITestCase1 {
+        public void RunTestCase<T>(T value) where T : notnull =>
+            Assert.AreEqual($"Some<{typeof(T).Name}>({value})", Maybe.Some(value).ToString());
     }
 }

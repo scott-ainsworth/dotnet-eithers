@@ -7,6 +7,8 @@ namespace Ainsworth.Eithers;
 /// </summary>
 public static class Maybe {
 
+    #region From<T> Method
+
     /// <summary>
     ///   Create a <see cref="Maybe{T}"/> from a specified value.
     /// </summary>
@@ -35,6 +37,9 @@ public static class Maybe {
     public static Maybe<T> From<T>(T? value) where T : class =>
         value is not null ? new Some<T>(value) : Maybe<T>.None;
 
+    #endregion
+    #region Some<T> Method
+
     /// <summary>
     ///   Create a <see cref="Maybe{T}"/> from a specified, non-<see langword="null"/> value.
     /// </summary>
@@ -44,11 +49,14 @@ public static class Maybe {
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
-    public static Maybe<T> Some<T>(T value) where T : notnull =>
+    public static Some<T> Some<T>(T value) where T : notnull =>
         // Null check for callers that don't use code analyzers to catch errors
         value is null
             ? throw new ArgumentNullException(nameof(value))
             : new Some<T>(value);
+
+    #endregion
+    #region ToMaybe<T> Extension Method
 
     /// <summary>
     ///   Convert a possibly-<see langword="null"/> value to a <see cref="Maybe{T}"/>.
@@ -76,6 +84,9 @@ public static class Maybe {
     ///   is <see langword="null"/>.</exception>
     public static Maybe<T> ToMaybe<T>(this T? value) where T : class => From(value);
 
+    #endregion
+    #region ToSome<T> Extension Method
+
     /// <summary>
     ///   Convert a non-<see langword="null"/> value to a <see cref="Some{T}"/>.
     /// </summary>
@@ -90,4 +101,5 @@ public static class Maybe {
             ? throw new ArgumentNullException(nameof(value))
             : new Some<T>(value);
 
+    #endregion
 }

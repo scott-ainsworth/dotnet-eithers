@@ -14,6 +14,17 @@ trim_trailing_whitespace: true
 insert_final_newline: true
 
 ################################################################################################
+# C# Compiler Diagnostics
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
+################################################################################################
+
+
+# CS0659: Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
+# Covered by SonarLint diagnostic S1206
+dotnet_diagnostic.CS0659.severity = none
+
+
+################################################################################################
 # C# Code Quality Rules
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
 ################################################################################################

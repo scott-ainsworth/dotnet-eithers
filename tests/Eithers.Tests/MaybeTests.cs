@@ -1,14 +1,10 @@
-using Ainsworth.Eithers;
-using System.Diagnostics.CodeAnalysis;
-using static Ainsworth.Eithers.Tests.TestData;
-
-namespace Maybe_Tests;
+namespace Ainsworth.Eithers.MaybeTests;
 
 /// <summary>
 ///   Unit tests for <see cref="Maybe.From{T}(T?)"/> methods.
 /// </summary>
 [TestClass]
-public class FromT_Method_Tests {
+public class FromT_Tests {
 
     #region test implementations
 
@@ -32,7 +28,7 @@ public class FromT_Method_Tests {
 
     // Reference type versions
 
-    [SuppressMessage(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell", "S4144:Methods should not have identical implementations",
         Justification = "S4144 is incorrect because T type constraints differ")]
     private static void Maybe_FromT_creates_Some_from_reference_value<T>(T? value) where T : class {
@@ -65,7 +61,7 @@ public class FromT_Method_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_FromT_creates_Some_from_primitive_type_value() {
-        Maybe_FromT_creates_Some_from_value(TestEnum.E11);
+        Maybe_FromT_creates_Some_from_value(FileAccess.Read);
         Maybe_FromT_creates_Some_from_value(111);
     }
 
@@ -75,7 +71,7 @@ public class FromT_Method_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_FromT_creates_Some_from_nullable_primitive_type_value() {
-        Maybe_FromT_creates_Some_from_nullable_value((TestEnum?)TestEnum.E11);
+        Maybe_FromT_creates_Some_from_nullable_value((FileAccess?)FileAccess.Read);
         Maybe_FromT_creates_Some_from_nullable_value((int?)100);
     }
 
@@ -107,7 +103,7 @@ public class FromT_Method_Tests {
     public void Maybe_FromT_creates_Some_from_reference_type_value() {
         Maybe_FromT_creates_Some_from_reference_value("111");
         Maybe_FromT_creates_Some_from_reference_value(new int[] { 111 });
-        Maybe_FromT_creates_Some_from_reference_value(new TestClass(111, "111"));
+        Maybe_FromT_creates_Some_from_reference_value(TimeZoneInfo.Local);
     }
 
     /// <summary>
@@ -116,7 +112,7 @@ public class FromT_Method_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_FromT_creates_None_from_primitive_type_null() {
-        Maybe_FromT_creates_None_from_null((TestEnum?)null);
+        Maybe_FromT_creates_None_from_null((FileAccess?)null);
         Maybe_FromT_creates_None_from_null((int?)null);
     }
 
@@ -138,7 +134,7 @@ public class FromT_Method_Tests {
     public void Maybe_FromT_creates_None_from_reference_type_null() {
         Maybe_FromT_creates_None_from_null((string)null!);
         Maybe_FromT_creates_None_from_null((int[])null!);
-        Maybe_FromT_creates_None_from_null((TestClass?)null!);
+        Maybe_FromT_creates_None_from_null((TimeZoneInfo?)null!);
     }
 }
 
@@ -146,17 +142,16 @@ public class FromT_Method_Tests {
 ///   Unit tests for <see cref="Maybe.Some{T}(T)"/> methods.
 /// </summary>
 [TestClass]
-public class SomeT_Method_Tests {
+public class SomeT_Tests {
 
     #region test implementations
 
     // Value type versions
 
     private static void Maybe_SomeT_creates_Some_from_value<T>(T value) where T : notnull {
-        var maybe = Maybe.Some(value);
-        Assert.IsInstanceOfType<Maybe<T>>(maybe);
-        Assert.IsInstanceOfType<Some<T>>(maybe);
-        var some = (maybe as Some<T>)!;
+        var some = Maybe.Some(value);
+        Assert.IsInstanceOfType<Maybe<T>>(some);
+        Assert.IsInstanceOfType<Some<T>>(some);
         Assert.AreEqual(value, some.Value);
     }
 
@@ -172,7 +167,7 @@ public class SomeT_Method_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_SomeT_creates_Some_for_primitive_types() {
-        Maybe_SomeT_creates_Some_from_value(TestEnum.E11);
+        Maybe_SomeT_creates_Some_from_value(FileAccess.Read);
         Maybe_SomeT_creates_Some_from_value(111);
     }
 
@@ -194,7 +189,7 @@ public class SomeT_Method_Tests {
     public void Maybe_SomeT_creates_Some_for_reference_types() {
         Maybe_SomeT_creates_Some_from_value("111");
         Maybe_SomeT_creates_Some_from_value(new int[] { 111 });
-        Maybe_SomeT_creates_Some_from_value(new TestClass(111, "111"));
+        Maybe_SomeT_creates_Some_from_value(TimeZoneInfo.Local);
     }
 
     /// <summary>
@@ -213,7 +208,7 @@ public class SomeT_Method_Tests {
     public void Maybe_SomeT_throws_for_null_reference_types() {
         Maybe_SomeT_throws_for_null<string>();
         Maybe_SomeT_throws_for_null<int[]>();
-        Maybe_SomeT_throws_for_null<TestClass>();
+        Maybe_SomeT_throws_for_null<TimeZoneInfo>();
     }
 }
 
@@ -221,7 +216,7 @@ public class SomeT_Method_Tests {
 ///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extension methods.
 /// </summary>
 [TestClass]
-public class ToMaybeT_ExtensionMethod_Tests {
+public class ToMaybeT_Tests {
 
     #region test implementations
 
@@ -254,7 +249,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
     ///   type wrapping the provided nullable primitive value.
     /// </summary>
     [TestMethod]
-    [SuppressMessage(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Blocker Code Smell", "S2699:Tests should include assertions",
         Justification = "This method simply provides documentation for the next developer")]
     public void Maybe_ToMaybe_returns_Some_for_nullable_primitive_types() {
@@ -266,7 +261,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
     ///   type wrapping the provided nullable value type value.
     /// </summary>
     [TestMethod]
-    [SuppressMessage(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Blocker Code Smell", "S2699:Tests should include assertions",
         Justification = "This method simply provides documentation for the next developer")]
     public void Maybe_ToMaybe_returns_Some_for_nullable_value_types() {
@@ -281,7 +276,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
     public void Maybe_ToMaybe_returns_Some_for_nullable_reference_types() {
         Maybe_ToMaybeT_creates_Some_from_reference_value("111");
         Maybe_ToMaybeT_creates_Some_from_reference_value(new int[] { 111 });
-        Maybe_ToMaybeT_creates_Some_from_reference_value(new TestClass(111, "111"));
+        Maybe_ToMaybeT_creates_Some_from_reference_value(TimeZoneInfo.Local);
     }
 
     /// <summary>
@@ -290,7 +285,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_ToMaybe_creates_None_from_primitive_type_null() {
-        Maybe_ToMaybeT_creates_None_from_null((TestEnum?)null);
+        Maybe_ToMaybeT_creates_None_from_null((FileAccess?)null);
         Maybe_ToMaybeT_creates_None_from_null((int?)null);
     }
 
@@ -312,7 +307,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
     public void Maybe_ToMaybe_creates_None_from_reference_type_null() {
         Maybe_ToMaybeT_creates_None_from_null((string)null!);
         Maybe_ToMaybeT_creates_None_from_null((int[])null!);
-        Maybe_ToMaybeT_creates_None_from_null((TestClass?)null!);
+        Maybe_ToMaybeT_creates_None_from_null((TimeZoneInfo?)null!);
     }
 }
 
@@ -320,7 +315,7 @@ public class ToMaybeT_ExtensionMethod_Tests {
 ///   Unit tests for <see cref="Maybe.ToMaybe{T}(T?)"/> extension methods.
 /// </summary>
 [TestClass]
-public class ToSomeT_ExtensionMethod_Tests {
+public class ToSomeT_Tests {
 
     #region test implementations
 
@@ -342,7 +337,7 @@ public class ToSomeT_ExtensionMethod_Tests {
     /// </summary>
     [TestMethod]
     public void Maybe_ToSome_returns_Some_for_primitive_types() {
-        Maybe_ToSomeT_creates_Some_from_value(TestEnum.E11);
+        Maybe_ToSomeT_creates_Some_from_value(FileAccess.Read);
         Maybe_ToSomeT_creates_Some_from_value(111);
     }
 
@@ -364,7 +359,7 @@ public class ToSomeT_ExtensionMethod_Tests {
     public void Maybe_ToSome_returns_Some_for_reference_types() {
         Maybe_ToSomeT_creates_Some_from_value("111");
         Maybe_ToSomeT_creates_Some_from_value(new int[] { 111 });
-        Maybe_ToSomeT_creates_Some_from_value(new TestClass(111, "111"));
+        Maybe_ToSomeT_creates_Some_from_value(TimeZoneInfo.Local);
     }
 
     /// <summary>
@@ -383,6 +378,6 @@ public class ToSomeT_ExtensionMethod_Tests {
     public void Maybe_ToSomeT_throws_for_null_reference_types() {
         Maybe_ToSomeT_throws_for_null<string>();
         Maybe_ToSomeT_throws_for_null<int[]>();
-        Maybe_ToSomeT_throws_for_null<TestClass>();
+        Maybe_ToSomeT_throws_for_null<TimeZoneInfo>();
     }
 }

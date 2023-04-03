@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ainsworth.Eithers;
 
@@ -19,9 +18,9 @@ namespace Ainsworth.Eithers;
 ///       .NET Curry: The Maybe Monad (C#)</a></item>
 ///   </list>
 /// </remarks>
-[SuppressMessage(
-    "Design", "CA1067:Override Object.Equals(object) when implementing IEquatable<T>",
-    Justification = "base.GetHasCode() provides correct implementation")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Minor Bug", "S1206:'Equals(Object)' and 'GetHashCode()' should be overridden in pairs",
+    Justification = "Descendent class overrides are sufficient")]
 public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerable<T>
     where T : notnull {
 
@@ -47,43 +46,64 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     #endregion
     #region Constructors, Casts, and Conversions
 
-    /// <summary>
-    ///   Defines an implicit conversion of a possibly-<see langword="null"/> value of
-    ///   type <typeparamref name="T"/> to a <see cref="Maybe{T}"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    [SuppressMessage(
-        "Usage", "CA2225:Operator overloads have named alternates",
-        Justification = "ToMaybe<T> provided in class Maybe")]
-    public static implicit operator Maybe<T>(T? value) => value is T v ? new Some<T>(v) : None;
+    // Intentionaly empty
 
     #endregion
-    #region IEquateable<Maybe<T>>, IEquatable<T>, and IEquatable Implementions
-
-    // WARNING: DO NOT implement Equals(T) and Equals(Maybe<T>) using subtypes
-    // [e.g., bool Equals(Some<T>)] here to avoid breaking future subclasses of Maybe<T>.
+    #region IEquatable<Maybe<T>>, IEquatable<T>, and IEquatable Implementations
 
     /// <summary>
-    ///   Returns a value indicating whether this instance's wrapped value is equal to
-    ///   the specified value.
+    ///   Determines whether the specified value equals this instance's wrapped value.
     /// </summary>
     /// <param name="other">A <typeparamref name="T"/> to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
-    ///   value; otherwise <see langword="false"/>.
+    ///   <see langword="true"/> if this instance is a <see cref="Some{T}"/> and
+    ///   <paramref name="other"/> equals this instance's wrapped
+    ///   value (<c>other == this.Value</c>); otherwise <see langword="false"/>.
     /// </returns>
     public abstract bool Equals(T other);
 
     /// <summary>
-    ///   Returns a value indicating whether this instance's wrapped value is equal to
-    ///   the specified <see cref="Maybe{T}"/>'s wrapped value.
+    ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
     /// </summary>
     /// <param name="other">A <see cref="Maybe{T}"/> to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if <paramref name="other"/>'s s wrapped value equals this
-    ///   instance's wrapped value; otherwise <see langword="false"/>.
+    ///   <see langword="true"/> if <paramref name="other"/> is equal to this instance; otherwise,
+    ///   <see langword="false"/>.  <paramref name="other"/> is equal to this instance if:
+    ///   <list type="bullet">
+    ///     <item>Both instances are type <see cref="None{T}"/> and are the same instance
+    ///       (<c>other == this</c>).</item>
+    ///     <item>Both instances are type <see cref="Some{T}"/> and their wrapped values
+    ///       are equal (<c>other.Value == this.Value</c>).</item>
+    ///   </list>
     /// </returns>
     public abstract bool Equals(Maybe<T> other);
+
+    /// <summary>
+    ///   Determines whether the specified object equals the current <see cref="Maybe{T}"/>
+    ///   instance.
+    /// </summary>
+    /// <param name="obj">An object to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if <paramref name="obj"/> is equal to this instance; otherwise,
+    ///   <see langword="false"/>.  <paramref name="obj"/> is equal to this instance if:
+    ///   <list type="bullet">
+    ///     <item>Both instances are type <see cref="None{T}"/> and are the same instance
+    ///       (<c>obj == this</c>).</item>
+    ///     <item>Both instances are type <see cref="Some{T}"/> and their wrapped values
+    ///       are equal (<c>obj.Value == this.Value</c>).</item>
+    ///     <item><paramref name="obj"/> is the same type is this instance's wrapped value and
+    ///       it equals this instance's wrapped value (<c>obj == this.Value</c>).</item>
+    ///   </list>
+    /// </returns>
+    /// <seealso cref="None{T}.Equals(object)"/>
+    /// <seealso cref="Some{T}.Equals(object)"/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "Descendent classed must override!")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
+    // Justification = "This Equals method is not called by current code.
+    // It exists solely to catch errant future subclasses.
+    public override bool Equals(object obj) => throw new NotImplementedException();
 
     #endregion
     #region IEnumerator<T> Implementation
