@@ -15,14 +15,16 @@ dotnet build
 
 # Execution
 
-dotnet-coverage collect -f xml -o coverage.xml \
+mkdir -p coverage/history coverage/report
+
+dotnet-coverage collect -f xml -o coverage/coverage.xml \
     dotnet test --verbosity minimal --results-directory . \
     --logger "html;logfilename=test-report.html;verbosity=detailed"
 reportgenerator \
-    -reports:'coverage.xml' \
-    -targetdir:'coverage-report' \
+    -reports:'coverage/coverage.xml' \
+    -targetdir:'coverage/report' \
     -reporttypes:'HtmlInline_AzurePipelines_Light;MarkdownSummary' \
-    -historydir:'coverage-history' \
+    -historydir:'coverage/history' \
     -assemblyfilters:'-*.Tests.dll' \
     -verbosity:'Warning' \
     -title:'Ainsworth.Eithers Test Report'
@@ -30,6 +32,6 @@ reportgenerator \
 # Open the report
 
 # open test-report.html
-open coverage-report/index.html
+open coverage/report/index.html
 
 # end
