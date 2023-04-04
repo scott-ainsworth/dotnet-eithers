@@ -27,9 +27,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{06
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C9C627FC-9E8E-46E2-8EA2-BC5CE16E24E2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5FD63356-B521-4C45-854E-8B00A6F8520A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ainsworth.Eithers", "src\Eithers\Ainsworth.Eithers.csproj", "{0B81714D-8EA5-47C9-AE0F-22FA82C75C2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5FD63356-B521-4C45-854E-8B00A6F8520A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ainsworth.Eithers.Tests", "tests\Eithers.Tests\Ainsworth.Eithers.Tests.csproj", "{83F57D71-ADAE-44E6-BDA7-41FBDAD368DF}"
 EndProject

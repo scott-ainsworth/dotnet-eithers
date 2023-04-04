@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace Ainsworth.Eithers;
 
@@ -14,10 +12,10 @@ namespace Ainsworth.Eithers;
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("None")]
-[SuppressMessage(
-    "Minor Bug", "S1206:\"Equals(Object)\" and \"GetHashCode()\" should be overridden in pairs",
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Minor Bug", "S1206:'Equals(Object)' and 'GetHashCode()' should be overridden in pairs",
     Justification = "base.GetHasCode() provides correct implementation")]
-public class None<T> : Maybe<T>
+public sealed class None<T> : Maybe<T>
     where T : notnull {
 
     #region Properties
@@ -48,20 +46,37 @@ public class None<T> : Maybe<T>
     #endregion
     #region IEquatable<T> and IEquatable<Maybe<T>> Implementations
 
-    /// <inheritdoc/>
+    /// <summary>
+    ///   Determines whether the specified value equals this instance's wrapped value.
+    /// </summary>
+    /// <param name="other">A <typeparamref name="T"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> (a value of type <typeparamref name="T"/> cannot equal
+    ///   a <see cref="None{T}"/>.
+    /// </returns>
+    /// <remarks>
+    ///   Note: Since <see cref="None{T}"/> cannot have a value, this overload always returns false. 
+    /// </remarks>
     public override bool Equals(T other) => false;
 
-    /// <inheritdoc/>
+    /// <summary>
+    ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="Maybe{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if <paramref name="other"/> is equal to this instance; otherwise,
+    ///   <see langword="false"/>.
+    /// </returns>
     public override bool Equals(Maybe<T> other) => other == NoneSingleton;
 
     /// <summary>
-    ///   Returns a value indicating whether this instance's wrapped value is equal to
-    ///   the specified object.
+    ///   Determines whether the specified object equals the current <see cref="None{T}"/>
+    ///   instance.
     /// </summary>
     /// <param name="obj">An object to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if <paramref name="obj"/> is the <see cref="None{T}"/>
-    ///   singleton; otherwise, <see langword="false"/>.
+    ///   <see langword="true"/> if <paramref name="obj"/> is equal to this instance; otherwise,
+    ///   <see langword="false"/>.
     /// </returns>
     public override bool Equals(object obj) => obj == NoneSingleton;
 

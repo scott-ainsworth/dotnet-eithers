@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ainsworth.Eithers;
 
 /// <summary>
-///   The subclass of <see cref="Maybe{T}"/> that represents a Maybe monad that has a value.
+///   The subclass of <see cref="Maybe{T}"/> that represents a <see cref="Maybe{T}"/>
+///   that has a value.
 /// </summary>
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("Some({Value})")]
-public class Some<T> : Maybe<T>
+public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
     where T : notnull {
 
     #region Properties
@@ -40,40 +40,60 @@ public class Some<T> : Maybe<T>
         Value = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    /// <summary>
-    ///   Defines an implicit conversion of a value of type <typeparamref name="T"/>
-    ///   to a <see cref="Some{T}"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    [SuppressMessage(
-        "Usage", "CA2225:Operator overloads have named alternates",
-        Justification = "ToSome<T> provided in class Maybe")]
-    public static implicit operator Some<T>(T value) => new(value);
-
     #endregion
     #region IEquatable<T> and IEquatable<Maybe<T>> Implementations
 
-    /// <inheritdoc/>
+    /// <summary>
+    ///   Determines whether the specified value equals this instance's wrapped value.
+    /// </summary>
+    /// <param name="other">A <typeparamref name="T"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
+    ///   value (<c>other == this.Value</c>); otherwise <see langword="false"/>.
+    /// </returns>
     public override bool Equals(T other) => Value.Equals(other);
 
-    /// <inheritdoc/>
-    public override bool Equals(Maybe<T> other) => other is Some<T> s && Value.Equals(s.Value);
+    /// <summary>
+    ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="Maybe{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if <paramref name="other"/> is type <see cref="Some{T}"/> and
+    ///   <paramref name="other"/>'s wrapped value equals to this instance's wrapped value
+    ///   (<c>other.Value == this.Value</c>); otherwise, <see langword="false"/>.
+    /// </returns>
+    public override bool Equals(Maybe<T> other) => other is Some<T> s && Equals(s.Value);
 
     /// <summary>
-    ///   Returns a value indicating whether this instance's wrapped value is equal to
-    ///   the specified object.
+    ///   Determines whether the specified <see cref="Some{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="Some{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if  <paramref name="other"/>'s wrapped value equals to this
+    ///   instance's wrapped value (<c>other.Value == this.Value</c>); otherwise,
+    ///   <see langword="false"/>.
+    /// </returns>
+    public bool Equals(Some<T> other) => other is not null && Value.Equals(other.Value);
+
+    // /// <inheritdoc/>
+    /// <summary>
+    ///   Determines whether the specified object equals the current <see cref="Maybe{T}"/>
+    ///   instance.
     /// </summary>
     /// <param name="obj">An object to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if <paramref name="obj"/> is an instance of
-    ///   <see cref="Maybe{T}"/> and <paramref name="obj"/>'s wrapped value equals this
-    ///   instance's wrapped value, or <see langword="true"/> if <paramref name="obj"/> is an
-    ///   instance of <typeparamref name="T"/> and equals this instance's wrapped value;
-    ///   otherwise <see langword="false"/>.
+    ///   <see langword="true"/> if <paramref name="obj"/> is equal to this instance; otherwise,
+    ///   <see langword="false"/>.  <paramref name="obj"/> is equal to this instance if:
+    ///   <list type="bullet">
+    ///     <item>Both instances are type <see cref="Some{T}"/> and their wrapped values
+    ///       are equal (<c>obj.Value == this.Value</c>).</item>
+    ///     <item><paramref name="obj"/> is the same type is this instance's wrapped value and
+    ///       it equals this instance's wrapped value (<c>obj == this.Value</c>).</item>
+    ///   </list>
     /// </returns>
     public override bool Equals(object obj) => obj switch {
-        Maybe<T> other => Equals(other),
-        T other => Equals(other),
+        Some<T> r => Equals(r),
+        T v => Equals(v),
         _ => false
     };
 
