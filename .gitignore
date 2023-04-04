@@ -360,5 +360,6 @@ MigrationBackup/
 
 # Test and code coverage
 coverage.xml
+coverage/
 coverage-*/
 test-report.html
