@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Ainsworth.Eithers;
-
-#pragma warning disable CS0659  // Covered by SonarLint S1206
 
 /// <summary>
 ///   The subclass of <see cref="Maybe{T}"/> that represents a Maybe monad
@@ -12,9 +12,6 @@ namespace Ainsworth.Eithers;
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("None")]
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Minor Bug", "S1206:'Equals(Object)' and 'GetHashCode()' should be overridden in pairs",
-    Justification = "base.GetHasCode() provides correct implementation")]
 public sealed class None<T> : Maybe<T>
     where T : notnull {
 
@@ -57,7 +54,10 @@ public sealed class None<T> : Maybe<T>
     /// <remarks>
     ///   Note: Since <see cref="None{T}"/> cannot have a value, this overload always returns false. 
     /// </remarks>
-    public override bool Equals(T other) => false;
+    public override bool Equals(T other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return false;
+    }
 
     /// <summary>
     ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
@@ -67,7 +67,36 @@ public sealed class None<T> : Maybe<T>
     ///   <see langword="true"/> if <paramref name="other"/> is equal to this instance; otherwise,
     ///   <see langword="false"/>.
     /// </returns>
-    public override bool Equals(Maybe<T> other) => other == NoneSingleton;
+    public override bool Equals(Maybe<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return other == NoneSingleton;
+    }
+
+    /// <summary>
+    ///   Determines whether the specified <see cref="None{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="None{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance and <paramref name="other"/>
+    ///   are the same instance.
+    /// </returns>
+    public override bool Equals(None<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return other == NoneSingleton;
+    }
+
+    /// <summary>
+    ///   Determines whether the specified <see cref="Some{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="Some{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="false"/>; a <see cref="None{T}"/> and a <see cref="Some{T}"/> can
+    ///   never be equal.
+    /// </returns>
+    public override bool Equals(Some<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return false;
+    }
 
     /// <summary>
     ///   Determines whether the specified object equals the current <see cref="None{T}"/>
@@ -89,7 +118,21 @@ public sealed class None<T> : Maybe<T>
     }
 
     #endregion
-    #region System.Object overrides
+    #region GetHasCode Implementation
+
+    /// <summary>
+    ///   Returns the hash code for this <see cref="None{T}"/>.
+    /// </summary>
+    /// <returns>
+    ///   A 32-bit signed integer hash code.
+    /// </returns>
+    /// <remarks>
+    ///   The hash code is computed using <see cref="RuntimeHelpers.GetHashCode(object)"/>.
+    /// </remarks>
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
+
+    #endregion
+    #region ToString Implementation
 
     /// <summary>
     ///   Returns a string representation of this <see cref="None{T}"/>.
@@ -99,7 +142,6 @@ public sealed class None<T> : Maybe<T>
     /// </returns>
     public override string ToString() =>
         $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(None)}";
-
 
     #endregion
 }

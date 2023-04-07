@@ -10,7 +10,7 @@ public static class Maybe {
     #region From<T> Method
 
     /// <summary>
-    ///   Create a <see cref="Maybe{T}"/> from a specified value.
+    ///   Create a <see cref="Maybe{T}"/> from a specified possibly-null value.
     /// </summary>
     /// <typeparam name="T">The type of the value wrapped by the returned
     ///   <see cref="Maybe{T}"/>.</typeparam>
@@ -24,7 +24,7 @@ public static class Maybe {
         value is T v ? new Some<T>(v) : Maybe<T>.None;
 
     /// <summary>
-    ///   Create a <see cref="Maybe{T}"/> from a specified value.
+    ///   Create a <see cref="Maybe{T}"/> from a specified possibly-null value.
     /// </summary>
     /// <typeparam name="T">The type of the value wrapped by the returned
     ///   <see cref="Maybe{T}"/>.</typeparam>
@@ -38,7 +38,7 @@ public static class Maybe {
         value is not null ? new Some<T>(value) : Maybe<T>.None;
 
     #endregion
-    #region Some<T> Method
+    #region FromValue<T> Method
 
     /// <summary>
     ///   Create a <see cref="Maybe{T}"/> from a specified, non-<see langword="null"/> value.
@@ -49,11 +49,11 @@ public static class Maybe {
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
-    public static Some<T> Some<T>(T value) where T : notnull =>
+    public static Some<T> FromValue<T>(T value) where T : notnull {
         // Null check for callers that don't use code analyzers to catch errors
-        value is null
-            ? throw new ArgumentNullException(nameof(value))
-            : new Some<T>(value);
+        _ = value ?? throw new ArgumentNullException(nameof(value));
+        return new Some<T>(value);
+    }
 
     #endregion
     #region ToMaybe<T> Extension Method
@@ -96,10 +96,11 @@ public static class Maybe {
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
-    public static Some<T> ToSome<T>(this T value) where T : notnull =>
-        value is null // Null check for callers that don't use code analyzers to catch errors
-            ? throw new ArgumentNullException(nameof(value))
-            : new Some<T>(value);
+    public static Some<T> ToSome<T>(this T value) where T : notnull {
+        // Null check for callers that don't use code analyzers to catch errors
+        _ = value ?? throw new ArgumentNullException(nameof(value));
+        return new Some<T>(value);
+    }
 
     #endregion
 }
