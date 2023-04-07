@@ -24,7 +24,7 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     /// <value>
     ///   The value wrapped by this <see cref="Maybe{T}"/> instance.
     /// </value>
-    public T Value { get; private init; }
+    public T Value { get; private set; }
 
     #endregion
     #region Constructors, Casts, and Conversions
