@@ -1206,7 +1206,8 @@ dotnet_diagnostic.IDE0001.severity = suggestion
 dotnet_diagnostic.IDE0002.severity = suggestion
 
 # IDE0004: Remove unnecessary cast
-dotnet_diagnostic.IDE0004.severity = suggestion
+# Covered by SonarLint S1905
+dotnet_diagnostic.IDE0004.severity = none
 
 # IDE0005: Remove unnecessary using directives
 dotnet_diagnostic.IDE0005.severity = suggestion

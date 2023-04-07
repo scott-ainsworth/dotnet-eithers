@@ -11,8 +11,7 @@ namespace Ainsworth.Eithers;
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("Some({Value})")]
-public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
-    where T : notnull {
+public sealed class Some<T> : Maybe<T> where T : notnull {
 
     #region Properties
 
@@ -37,7 +36,9 @@ public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/>
     ///   is <see langword="null"/>.</exception>
     internal Some(T value) {
-        Value = value ?? throw new ArgumentNullException(nameof(value));
+        // Null check for callers that don't use code analyzers to catch errors
+        _ = value ?? throw new ArgumentNullException(nameof(value));
+        Value = value;
     }
 
     #endregion
@@ -51,7 +52,10 @@ public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
     ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
     ///   value (<c>other == this.Value</c>); otherwise <see langword="false"/>.
     /// </returns>
-    public override bool Equals(T other) => Value.Equals(other);
+    public override bool Equals(T other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return Value.Equals(other);
+    }
 
     /// <summary>
     ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
@@ -62,18 +66,37 @@ public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
     ///   <paramref name="other"/>'s wrapped value equals to this instance's wrapped value
     ///   (<c>other.Value == this.Value</c>); otherwise, <see langword="false"/>.
     /// </returns>
-    public override bool Equals(Maybe<T> other) => other is Some<T> s && Equals(s.Value);
+    public override bool Equals(Maybe<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return other is Some<T> s && Equals(s.Value);
+    }
+
+    /// <summary>
+    ///   Determines whether the specified <see cref="None{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="None{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="false"/>; a <see cref="None{T}"/> can never equal a
+    ///   <see cref="Some{T}"/>.
+    /// </returns>
+    public override bool Equals(None<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return false;
+    }
 
     /// <summary>
     ///   Determines whether the specified <see cref="Some{T}"/> equals the current instance.
     /// </summary>
     /// <param name="other">A <see cref="Some{T}"/> to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if  <paramref name="other"/>'s wrapped value equals to this
+    ///   <see langword="true"/> if <paramref name="other"/>'s wrapped value equals to this
     ///   instance's wrapped value (<c>other.Value == this.Value</c>); otherwise,
     ///   <see langword="false"/>.
     /// </returns>
-    public bool Equals(Some<T> other) => other is not null && Value.Equals(other.Value);
+    public override bool Equals(Some<T> other) {
+        _ = other ?? throw new ArgumentNullException(nameof(other));
+        return Value.Equals(other.Value);
+    }
 
     // /// <inheritdoc/>
     /// <summary>
@@ -115,9 +138,7 @@ public sealed class Some<T> : Maybe<T>, IEquatable<Some<T>>
     ///   A 32-bit signed integer hash code.
     /// </returns>
     /// <remarks>
-    ///   The hash code for <see cref="Some{T}"/> instances is the wrapped value's hash code.
-    ///   The hash code for <see cref="None{T}"/> instances is computed using
-    ///   <see cref="object.GetHashCode"/> (i.e., the default hash function).
+    ///   The hash code the wrapped value's hash code.
     /// </remarks>
     public override int GetHashCode() => Value.GetHashCode();
 

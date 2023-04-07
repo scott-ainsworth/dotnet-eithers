@@ -1,3 +1,7 @@
+// Exclude from code coverate reports
+
+[assembly: System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
+
 // Suppressions that apply to the entire C# project
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(

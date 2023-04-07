@@ -1,11 +1,14 @@
 using System.Reflection;
 
-using static Ainsworth.Eithers.Tests.TestRunner;
+using Ainsworth.Eithers;
+
+using TestSupport;
+using static TestSupport.TestRunner;
 
 // Disable SonarLint S2699 because most assertions are in called subroutines.
 #pragma warning disable S2699 // Test should include assertions
 
-namespace Ainsworth.Eithers.Tests.NoneTTests;
+namespace NoneT_Tests;
 
 /// <summary>
 ///   Unit tests for <see cref="None{T}"/> constructors.
@@ -18,9 +21,10 @@ public class Constructor_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_constructors_are_private() =>
-        RunTestCases(new NoneT_Constructors_are_not_public());
-    private sealed class NoneT_Constructors_are_not_public : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull {
+        RunUnitTests(new NoneT_Constructors_are_not_public());
+
+    private sealed class NoneT_Constructors_are_not_public : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
             var nonPrivateConstructors = typeof(None<T>).
                 GetConstructors(
                     BindingFlags.Public | BindingFlags.NonPublic |
@@ -36,9 +40,6 @@ public class Constructor_Tests {
 /// <summary>
 ///   Unit test for <see cref="None{T}.Equals(Maybe{T})"/> tests.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Blocker Code Smell", "S2187:TestCases should contain tests",
-    Justification = "Tests are in subclasses. This is an audit trail.")]
 [TestClass]
 public class EqualsMaybeT_Tests {
 
@@ -48,22 +49,31 @@ public class EqualsMaybeT_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsMaybeT_returns_false_for_NoneT_of_different_type() =>
-        RunTestCases(new EqualsMaybeT_returns_false_for_None_of_different_type());
-    private sealed class EqualsMaybeT_returns_false_for_None_of_different_type : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+        RunUnitTests(new EqualsMaybeT_returns_false_for_None_of_different_type());
+
+    private sealed class EqualsMaybeT_returns_false_for_None_of_different_type : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
             Assert.IsFalse(Maybe<T>.None.Equals(Maybe<bool>.None));
     }
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
-    ///  for <see langword="null"/>.
+    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method throws a
+    ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
+    /// <remarks>
+    ///   This can only happen if called from a "#nullable disable" environment.
+    /// </remarks>
     [TestMethod]
-    public void NoneT_EqualsMaybeT_returns_false_for_null() =>
-        RunTestCases(new EqualsMaybeT_returns_false_for_null());
-    private sealed class EqualsMaybeT_returns_false_for_null : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
-            Assert.IsFalse(Maybe<T>.None.Equals(null!));
+    public void NoneT_EqualsMaybeT_returns_throws_for_null_argument() =>
+        RunUnitTests(new EqualsMaybeT_returns_throws_for_null_argument());
+
+    private sealed class EqualsMaybeT_returns_throws_for_null_argument : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            // Use 'null!' to simulate call from '#nullable disable' environment
+            var ex = Assert.ThrowsException<ArgumentNullException>(
+                () => Maybe<T>.None.Equals((Maybe<T>)null!));
+            Assert.AreEqual("other", ex.ParamName);
+        }
     }
 
     /// <summary>
@@ -72,9 +82,10 @@ public class EqualsMaybeT_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsMaybeT_returns_true_for_NoneT_of_same_type() =>
-        RunTestCases(new EqualsMaybeT_returns_true_for_NoneT_of_same_type());
-    private sealed class EqualsMaybeT_returns_true_for_NoneT_of_same_type : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+        RunUnitTests(new EqualsMaybeT_returns_true_for_NoneT_of_same_type());
+
+    private sealed class EqualsMaybeT_returns_true_for_NoneT_of_same_type : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
             Assert.IsTrue(Maybe<T>.None.Equals(Maybe<T>.None));
     }
 
@@ -84,10 +95,11 @@ public class EqualsMaybeT_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsMaybeT_returns_true_for_SomeT() =>
-        RunTestCases(new EqualsMaybeT_returns_true_for_SomeT());
-    private sealed class EqualsMaybeT_returns_true_for_SomeT : ITestCase1 {
-        public void RunTestCase<T>(T value) where T : notnull {
-            var some = Maybe.Some(value);
+        RunUnitTests(new EqualsMaybeT_returns_true_for_SomeT());
+
+    private sealed class EqualsMaybeT_returns_true_for_SomeT : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var some = Maybe.FromValue(value);
             Assert.IsFalse(Maybe<T>.None.Equals(some));
         }
     }
@@ -97,7 +109,7 @@ public class EqualsMaybeT_Tests {
 ///   Unit test for <see cref="None{T}"/>.Equals(object) tests.
 /// </summary>
 [TestClass]
-public class NoneT_EqualsObject_Tests {
+public class EqualsObject_Tests {
 
     /// <summary>
     ///  The <see cref="None{T}.Equals(object)"/> method returns <see langword="false"/>
@@ -105,9 +117,13 @@ public class NoneT_EqualsObject_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsObject_returns_false_for_NoneT_of_different_type() =>
-        RunTestCases(new EqualsObject_returns_false_for_None_of_different_type());
-    private sealed class EqualsObject_returns_false_for_None_of_different_type : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+        RunUnitTests(new EqualsObject_returns_false_for_None_of_different_type());
+
+    private sealed class EqualsObject_returns_false_for_None_of_different_type : IUnitTest0 {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Style", "IDE0004:Remove Unnecessary Cast",
+            Justification = "Cast ensures desired instance of Equals is used.")]
+        public void RunTest<T>() where T : notnull =>
             Assert.IsFalse(Maybe<T>.None.Equals((object)Maybe<bool>.None));
     }
 
@@ -116,10 +132,11 @@ public class NoneT_EqualsObject_Tests {
     ///  for <see langword="null"/>.
     /// </summary>
     [TestMethod]
-    public void NoneT_EqualsObject_returns_false_for_null() =>
-        RunTestCases(new EqualsObject_returns_false_for_null());
-    private sealed class EqualsObject_returns_false_for_null : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+    public void NoneT_EqualsObject_returns_false_for_null_argument() =>
+        RunUnitTests(new EqualsObject_returns_false_for_null_argument());
+
+    private sealed class EqualsObject_returns_false_for_null_argument : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
             Assert.IsFalse(Maybe<T>.None.Equals((object)null!));
     }
 
@@ -129,9 +146,10 @@ public class NoneT_EqualsObject_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsObject_returns_true_for_NoneT_of_same_type() =>
-        RunTestCases(new EqualsObject_returns_true_for_NoneT_of_same_type());
-    private sealed class EqualsObject_returns_true_for_NoneT_of_same_type : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+        RunUnitTests(new EqualsObject_returns_true_for_NoneT_of_same_type());
+
+    private sealed class EqualsObject_returns_true_for_NoneT_of_same_type : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
             Assert.IsTrue(Maybe<T>.None.Equals((object)Maybe<T>.None));
     }
 
@@ -141,40 +159,158 @@ public class NoneT_EqualsObject_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsObject_returns_true_for_SomeT() =>
-        RunTestCases(new EqualsObject_returns_true_for_SomeT());
-    private sealed class EqualsObject_returns_true_for_SomeT : ITestCase1 {
-        public void RunTestCase<T>(T value) where T : notnull {
-            var some = Maybe.Some(value);
+        RunUnitTests(new EqualsObject_returns_true_for_SomeT());
+
+    private sealed class EqualsObject_returns_true_for_SomeT : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var some = Maybe.FromValue(value);
             Assert.IsFalse(Maybe<T>.None.Equals((object)some));
         }
     }
 }
 
 /// <summary>
-///   Unit test for <see cref="None{T}.Equals(T)"/> tests.
+///   Unit test for <see cref="None{T}"/>.Equals(object) tests.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Blocker Code Smell", "S2187:TestCases should contain tests",
-    Justification = "Tests are in subclasses. This is an audit trail.")]
+[TestClass]
+public class EqualsNoneT_Tests {
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(None{T})"/> method returns <see langword="false"/>
+    ///  for other <see cref="Maybe{T}.None"/> values.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_EqualsNoneT_returns_false_for_NoneT_of_different_type() =>
+        RunUnitTests(new EqualsNoneT_returns_false_for_None_of_different_type());
+
+    private sealed class EqualsNoneT_returns_false_for_None_of_different_type : IUnitTest0 {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Style", "IDE0004:Remove Unnecessary Cast",
+            Justification = "Cast ensures desired instance of Equals is used.")]
+        public void RunTest<T>() where T : notnull {
+            Assert.IsFalse(Maybe<T>.None.Equals(Maybe<bool>.None));
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(None{T})"/> method throws a
+    ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
+    /// </summary>
+    /// <remarks>
+    ///   This can only happen if called from a "#nullable disable" environment.
+    /// </remarks>
+    [TestMethod]
+    public void NoneT_EqualsNoneT_returns_throws_for_null_argument() =>
+        RunUnitTests(new EqualsNoneT_returns_throws_for_null_argument());
+
+    private sealed class EqualsNoneT_returns_throws_for_null_argument : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            // Use 'null!' to simulate call from '#nullable disable' environment
+            var ex = Assert.ThrowsException<ArgumentNullException>(
+                () => Maybe<T>.None.Equals((None<T>)null!));
+            Assert.AreEqual("other", ex.ParamName);
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(None{T})"/> method returns <see langword="true"/>
+    ///  for the same <see cref="Maybe{T}.None"/>.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_EqualsNoneT_returns_true_for_NoneT_of_same_type() =>
+        RunUnitTests(new EqualsNoneT_returns_true_for_NoneT_of_same_type());
+
+    private sealed class EqualsNoneT_returns_true_for_NoneT_of_same_type : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
+            Assert.IsTrue(Maybe<T>.None.Equals((None<T>)Maybe<T>.None));
+    }
+}
+
+/// <summary>
+///   Unit test for the <see cref="None{T}.Equals(object)"/> method.
+/// </summary>
+[TestClass]
+public class EqualsSomeT_Tests {
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(Some{T})"/> method returns <see langword="false"/>.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_EqualsSomeT_returns_false_for_NoneT_of_different_type() =>
+        RunUnitTests(new EqualsSomeT_returns_false_for_None_of_different_type());
+
+    private sealed class EqualsSomeT_returns_false_for_None_of_different_type : IUnitTest1 {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Style", "IDE0004:Remove Unnecessary Cast",
+            Justification = "Cast ensures desired instance of Equals is used.")]
+        public void RunTest<T>(T value) where T : notnull {
+            var some = Maybe.FromValue(value);
+            Assert.IsFalse(Maybe<T>.None.Equals(some));
+        }
+    }
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(Some{T})"/> method throws a
+    ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
+    /// </summary>
+    /// <remarks>
+    ///   This can only happen if called from a "#nullable disable" environment.
+    /// </remarks>
+    [TestMethod]
+    public void NoneT_EqualsSomeT_returns_throws_for_null_argument() =>
+        RunUnitTests(new EqualsSomeT_returns_throws_for_null_argument());
+
+    private sealed class EqualsSomeT_returns_throws_for_null_argument : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            // Use 'null!' to simulate call from '#nullable disable' environment
+            var ex = Assert.ThrowsException<ArgumentNullException>(
+                () => Maybe<T>.None.Equals((Some<T>)null!));
+            Assert.AreEqual("other", ex.ParamName);
+        }
+    }
+}
+
+/// <summary>
+///   Unit test for the <see cref="None{T}.Equals(T)"/> method.
+/// </summary>
 [TestClass]
 public class EqualsT_Tests {
-
-    // TODO: NoneT_EqualsT_returns_false_for_null (reference value)
 
     /// <summary>
     ///  The <see cref="None{T}.Equals(T)"/> method returns <see langword="false"/>.
     /// </summary>
     [TestMethod]
     public void NoneT_EqualsT_returns_false_for_value() =>
-        RunTestCases(new EqualsT_returns_false_for_null());
-    private sealed class EqualsT_returns_false_for_null : ITestCase1 {
-        public void RunTestCase<T>(T value) where T : notnull =>
+        RunUnitTests(new EqualsT_returns_false_for_value());
+
+    private sealed class EqualsT_returns_false_for_value : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull =>
+            // Use 'null!' to simulate call from #nullable disable environment
             Assert.IsFalse(Maybe<T>.None.Equals(value));
+    }
+
+    /// <summary>
+    ///  The <see cref="None{T}.Equals(T)"/> method returns <see langword="false"/>.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_EqualsT_throws_for_null_argument() =>
+        RunUnitTests(new EqualsT_throws_for_null_argument());
+
+    private sealed class EqualsT_throws_for_null_argument : IUnitTest0Split {
+        public void RunTestOnReferenceType<T>() where T : class {
+            // Use 'null!' to simulate call from #nullable disable environment
+            var ex = Assert.ThrowsException<ArgumentNullException>(
+                () => Maybe<T>.None.Equals((T)null!));
+            Assert.AreEqual("other", ex.ParamName);
+        }
+        public void RunTestOnValueType<T>() where T : struct {
+            // This can only be executed for reference types
+        }
     }
 }
 
 /// <summary>
-///   Unit test for <see cref="None{T}.GetEnumerator"/> tests.
+///   Unit test for <see cref="None{T}.GetEnumerator"/> methods.
 /// </summary>
 [TestClass]
 public class GetEnumerator_Tests {
@@ -185,9 +321,10 @@ public class GetEnumerator_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_GetEnumerator_returns_correct_enumerator() =>
-        RunTestCases(new GetEnumerator_returns_correct_enumerator());
-    private sealed class GetEnumerator_returns_correct_enumerator : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull {
+        RunUnitTests(new GetEnumerator_returns_correct_enumerator());
+
+    private sealed class GetEnumerator_returns_correct_enumerator : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
             var enumerator = Maybe<T>.None.GetEnumerator();
             Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
             Assert.IsFalse(enumerator.MoveNext());
@@ -212,10 +349,11 @@ public class GetHashCode_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_GetHashCode_returns_correct_value_for_primitive_types() =>
-        RunTestCases(new GetHashCode_returns_correct_value());
-    private sealed class GetHashCode_returns_correct_value : ITestCase1 {
-        public void RunTestCase<T>(T value) where T : notnull {
-            var maybe = Maybe.Some(value);
+        RunUnitTests(new GetHashCode_returns_correct_value());
+
+    private sealed class GetHashCode_returns_correct_value : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var maybe = Maybe.FromValue(value);
             Assert.AreEqual(Maybe<T>.None.GetHashCode(), Maybe<T>.None.GetHashCode());
             Assert.AreNotEqual(Maybe<T>.None.GetHashCode(), maybe.GetHashCode());
         }
@@ -233,9 +371,10 @@ public class HasValue_Property_Tests {
     /// </summary>
     [TestMethod]
     public void NoneT_HasValue_returns_false() =>
-        RunTestCases(new HasValue_returns_false());
-    private sealed class HasValue_returns_false : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull => Assert.IsFalse(Maybe<T>.None.HasValue);
+        RunUnitTests(new HasValue_returns_false());
+
+    private sealed class HasValue_returns_false : IUnitTest0 {
+        public void RunTest<T>() where T : notnull => Assert.IsFalse(Maybe<T>.None.HasValue);
     }
 }
 
@@ -250,9 +389,10 @@ public class ToString_Tests {
     /// </summary>
     [TestMethod]
     public void MaybeT_ToString_creates_correct_representation_for_NoneTs() =>
-        RunTestCases(new ToString_creates_correct_representation_for_NoneT());
-    private sealed class ToString_creates_correct_representation_for_NoneT : ITestCase0 {
-        public void RunTestCase<T>() where T : notnull =>
+        RunUnitTests(new ToString_creates_correct_representation_for_NoneT());
+
+    private sealed class ToString_creates_correct_representation_for_NoneT : IUnitTest0 {
+        public void RunTest<T>() where T : notnull =>
             Assert.AreEqual($"Maybe<{typeof(T).Name}>.None", Maybe<T>.None.ToString());
     }
 }

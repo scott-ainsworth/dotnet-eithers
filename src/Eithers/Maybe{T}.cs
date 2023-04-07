@@ -19,8 +19,8 @@ namespace Ainsworth.Eithers;
 ///   </list>
 /// </remarks>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Minor Bug", "S1206:'Equals(Object)' and 'GetHashCode()' should be overridden in pairs",
-    Justification = "Descendent class overrides are sufficient")]
+    "Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
+    Justification = "Constructor is protected and all subclasses are sealed.")]
 public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerable<T>
     where T : notnull {
 
@@ -46,7 +46,10 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     #endregion
     #region Constructors, Casts, and Conversions
 
-    // Intentionaly empty
+    /// <summary>
+    ///   Initialize a new <see cref="Maybe{T}"/> instance.
+    /// </summary>
+    protected Maybe() { }
 
     #endregion
     #region IEquatable<Maybe<T>>, IEquatable<T>, and IEquatable Implementations
@@ -79,6 +82,27 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     public abstract bool Equals(Maybe<T> other);
 
     /// <summary>
+    ///   Determines whether the specified <see cref="None{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="None{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance is a <see cref="None{T}"/> and
+    ///   <paramref name="other"/> is the same instance.
+    /// </returns>
+    public abstract bool Equals(None<T> other);
+
+    /// <summary>
+    ///   Determines whether the specified <see cref="Some{T}"/> equals the current instance.
+    /// </summary>
+    /// <param name="other">A <see cref="Some{T}"/> to compare with this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance is a <see cref="Some{T}"/> and the
+    ///   <paramref name="other"/>'s wrapped value equals to this instance's wrapped value
+    ///   (<c>other.Value == this.Value</c>); otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool Equals(Some<T> other);
+
+    /// <summary>
     ///   Determines whether the specified object equals the current <see cref="Maybe{T}"/>
     ///   instance.
     /// </summary>
@@ -103,7 +127,34 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
     // Justification = "This Equals method is not called by current code.
     // It exists solely to catch errant future subclasses.
-    public override bool Equals(object obj) => throw new NotImplementedException();
+    public override bool Equals(object obj) => throw new NotImplementedException(
+        $"{typeof(Maybe<T>)}.{nameof(object.Equals)} must be overridden in descendent classes");
+
+    #endregion
+    #region Object Overrides
+
+    /// <summary>
+    ///   Computer the hash code for this instance.
+    /// </summary>
+    /// <returns>
+    ///   A hash code for the this instance.
+    /// </returns>
+    /// <exception cref="NotImplementedException">Thrown when <see cref="GetHashCode"/>
+    ///   has not been implemented in a descendent class and
+    ///   <see cref="GetHashCode"/> is called.</exception>
+    /// <remarks>
+    ///   <strong>Warning</strong>: GetHashCodemust be implemented in every descendent class.
+    ///   If not implemented, this default implementation throws a
+    ///   <see cref="NotImplementedException"/>.
+    /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "Descendent classed must override!")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
+    // Justification = "This Equals method is not called by current code.
+    // It exists solely to catch errant future subclasses.
+    public override int GetHashCode() => throw new NotImplementedException(
+        $"{typeof(Maybe<T>)}.{nameof(object.GetHashCode)} must be overridden in descendent classes");
 
     #endregion
     #region IEnumerator<T> Implementation
