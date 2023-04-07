@@ -21,7 +21,7 @@ namespace Ainsworth.Eithers;
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
     Justification = "Constructor is protected and all subclasses are sealed.")]
-public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerable<T>
+public abstract partial class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerable<T>
     where T : notnull {
 
     #region Properties
@@ -178,6 +178,20 @@ public abstract class Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>, IEnumerabl
     ///   instance's zero or one values.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    #endregion
+    #region TryGetValue
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the value wrapped by this instance,
+    ///   if this instance has a value; otherwise, the default value for type
+    ///   <typeparamref name="T"/>.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance wraps a value; otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool TryGetValue(out T value);
 
     #endregion
 }

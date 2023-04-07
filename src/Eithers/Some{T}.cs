@@ -155,4 +155,20 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
         $"{nameof(Some<T>)}<{typeof(T).Name}>({Value})";
 
     #endregion
+    #region TryGetValue
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the value wrapped by this
+    ///   instance.</param>
+    /// <returns>
+    ///   <see langword="true"/>; <see cref="Some{T}"/> always wraps a value.
+    /// </returns>
+    public override bool TryGetValue(out T value) {
+        value = Value;
+        return true;
+    }
+
+    #endregion
 }

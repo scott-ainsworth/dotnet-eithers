@@ -388,11 +388,32 @@ public class ToString_Tests {
     ///   The <see cref="None{T}.ToString"/> methods creates the expected representation.
     /// </summary>
     [TestMethod]
-    public void MaybeT_ToString_creates_correct_representation_for_NoneTs() =>
+    public void NoneT_ToString_creates_correct_representation_for_NoneTs() =>
         RunUnitTests(new ToString_creates_correct_representation_for_NoneT());
 
     private sealed class ToString_creates_correct_representation_for_NoneT : IUnitTest0 {
         public void RunTest<T>() where T : notnull =>
             Assert.AreEqual($"Maybe<{typeof(T).Name}>.None", Maybe<T>.None.ToString());
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Some{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="None{T}.TryGetValue(out T)"/> method returns false.
+    /// </summary>
+    [TestMethod]
+    public void NoneT_TryGetValue_returns_false_and_default_value() =>
+        RunUnitTests(new TryGetValue_returns_false_and_default_value());
+
+    private sealed class TryGetValue_returns_false_and_default_value : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            Assert.IsFalse(Maybe<T>.None.TryGetValue(out var returnedValue));
+            Assert.AreEqual(default, returnedValue);
+        }
     }
 }
