@@ -192,4 +192,19 @@ public abstract class Result<T>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
+    #region TryGetValue
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the value wrapped by this
+    ///   instance, if this instance has a value; otherwise, contains the default value for
+    ///   type <typeparamref name="T"/>.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance wraps a value;
+    ///   otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool TryGetValue(out T value);
+
+    #endregion
 }

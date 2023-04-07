@@ -432,3 +432,25 @@ public class EqualsValueResultT_Tests {
         }
     }
 }
+
+/// <summary>
+///   Unit tests for <see cref="ErrorResult{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="ErrorResult{T}.TryGetValue(out T)"/> method returns false.
+    /// </summary>
+    [TestMethod]
+    public void ErrorResultT_TryGetValue_returns_false_and_default_value_for_NoneT() =>
+        RunUnitTests(new TryGetValue_returns_false_and_default_value_for_NoneT());
+
+    private sealed class TryGetValue_returns_false_and_default_value_for_NoneT : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            var result = Result.From<T>(new ArgumentException("test"));
+            Assert.IsFalse(result.TryGetValue(out var returnedValue));
+            Assert.AreEqual(default, returnedValue);
+        }
+    }
+}

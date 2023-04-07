@@ -360,3 +360,42 @@ public class ToException_Tests {
             type.GetMethods(flags).Where(m => m.Name == nameof(ErrorResult<T>.ToException));
     }
 }
+
+/// <summary>
+///   Unit tests for <see cref="Result{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="Result{T}.TryGetValue(out T)"/> method returns false when no value
+    ///   is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void ResultT_TryGetValue_returns_false_and_default_value_for_NoneT() =>
+        RunUnitTests(new TryGetValue_returns_false_and_default_value_for_NoneT());
+
+    private sealed class TryGetValue_returns_false_and_default_value_for_NoneT : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            var result = (Result<T>)Result.From<T>(new ArgumentException("test"));
+            Assert.IsFalse(result.TryGetValue(out var returnedValue));
+            Assert.AreEqual(default, returnedValue);
+        }
+    }
+
+    /// <summary>
+    ///   The <see cref="Result{T}.TryGetValue(out T)"/> method returns true and the wrapped
+    ///   value when a value is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void ResultT_TryGetValue_returns_true_and_correct_value_for_SomeT() =>
+        RunUnitTests(new TryGetValue_returns_true_and_correct_value_for_SomeT());
+
+    private sealed class TryGetValue_returns_true_and_correct_value_for_SomeT : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var result = (Result<T>)Result.From(value);
+            Assert.IsTrue(result.TryGetValue(out var returnedValue));
+            Assert.AreEqual(value, returnedValue);
+        }
+    }
+}

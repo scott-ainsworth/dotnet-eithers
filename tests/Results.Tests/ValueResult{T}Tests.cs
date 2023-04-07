@@ -399,3 +399,26 @@ public class EqualsValueResultT_Tests {
         }
     }
 }
+
+/// <summary>
+///   Unit tests for <see cref="ValueResult{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="ValueResult{T}.TryGetValue(out T)"/> method returns true
+    ///   and the wrapped value.
+    /// </summary>
+    [TestMethod]
+    public void ValueResultT_TryGetValue_returns_true_and_correct_value_for_SomeT() =>
+        RunUnitTests(new TryGetValue_returns_true_and_correct_value_for_SomeT());
+
+    private sealed class TryGetValue_returns_true_and_correct_value_for_SomeT : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var result = Result.From(value);
+            Assert.IsTrue(result.TryGetValue(out var returnedValue));
+            Assert.AreEqual(value, returnedValue);
+        }
+    }
+}
