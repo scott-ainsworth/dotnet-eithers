@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Reflection;
 
 using Ainsworth.Eithers;
@@ -8,7 +9,7 @@ using static TestSupport.TestRunner;
 // Disable SonarLint S2699 because most assertions are in called subroutines.
 #pragma warning disable S2699 // Test should include assertions
 
-namespace NoneT_Tests;
+namespace Maybes_NoneT_Tests;
 
 /// <summary>
 ///   Unit tests for <see cref="None{T}"/> constructors.
@@ -38,13 +39,13 @@ public class Constructor_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="None{T}.Equals(Maybe{T})"/> tests.
+///   Unit test for <see cref="None{T}.Equals(IMaybe{T})"/> tests.
 /// </summary>
 [TestClass]
 public class EqualsMaybeT_Tests {
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
+    ///  The <see cref="None{T}.Equals(IMaybe{T})"/> method returns <see langword="false"/>
     ///  for other <see cref="Maybe{T}.None"/> values.
     /// </summary>
     [TestMethod]
@@ -57,7 +58,7 @@ public class EqualsMaybeT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method throws a
+    ///  The <see cref="None{T}.Equals(IMaybe{T})"/> method throws a
     ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     /// <remarks>
@@ -71,13 +72,13 @@ public class EqualsMaybeT_Tests {
         public void RunTest<T>() where T : notnull {
             // Use 'null!' to simulate call from '#nullable disable' environment
             var ex = Assert.ThrowsException<ArgumentNullException>(
-                () => Maybe<T>.None.Equals((Maybe<T>)null!));
+                () => Maybe<T>.None.Equals((IMaybe<T>)null!));
             Assert.AreEqual("other", ex.ParamName);
         }
     }
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method returns <see langword="true"/>
+    ///  The <see cref="None{T}.Equals(IMaybe{T})"/> method returns <see langword="true"/>
     ///  for the same <see cref="Maybe{T}.None"/>.
     /// </summary>
     [TestMethod]
@@ -90,7 +91,7 @@ public class EqualsMaybeT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
+    ///  The <see cref="None{T}.Equals(IMaybe{T})"/> method returns <see langword="false"/>
     ///  for <see cref="Some{T}"/>.
     /// </summary>
     [TestMethod]
@@ -315,7 +316,7 @@ public class EqualsT_Tests {
 public class GetEnumerator_Tests {
 
     /// <summary>
-    ///   The <see cref="Maybe{T}.GetEnumerator"/> methods return a correct
+    ///   The <see cref="IEnumerable{T}.GetEnumerator"/> methods return a correct
     ///   <see cref="IEnumerator{T}"/> for a <see cref="None{T}"/>.
     /// </summary>
     [TestMethod]
@@ -329,25 +330,37 @@ public class GetEnumerator_Tests {
             Assert.IsFalse(enumerator.MoveNext());
         }
     }
+
+    /// <summary>
+    ///   The <see cref="IEnumerable{T}.GetEnumerator"/> methods return a correct
+    ///   <see cref="IEnumerator"/> for a <see cref="None{T}"/> cast to
+    ///   <see cref="IEnumerable"/>.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_IEnumeratorGetEnumerator_returns_correct_enumerator_for_None_instance() =>
+        RunUnitTests(new IEnumeratorGetEnumerator_returns_correct_enumerator_for_None_instance());
+
+    private sealed class IEnumeratorGetEnumerator_returns_correct_enumerator_for_None_instance
+            : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            var enumerator = ((IEnumerable)Maybe<T>.None).GetEnumerator();
+            Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
+            Assert.IsFalse(enumerator.MoveNext());
+        }
+    }
 }
 
 /// <summary>
 ///   Unit tests for <see cref="None{T}"/>.GetHashCode().
 /// </summary>
-/// <remarks>
-///   <see cref="Maybe{T}"/> does not override <see cref="object.GetHashCode"/>; however,
-///   <see cref="Some{T}"/> and <see cref="None{T}"/> do.  These test cases show that
-///   the <see cref="object.GetHashCode"/> overrides calculate the expected hash code.
-/// </remarks>
 [TestClass]
 public class GetHashCode_Tests {
 
     /// <summary>
-    ///   The <see cref="object.GetHashCode"/> method returns the correct value
-    ///   for primitive type values.
+    ///   The <see cref="object.GetHashCode"/> method returns the correct value.
     /// </summary>
     [TestMethod]
-    public void NoneT_GetHashCode_returns_correct_value_for_primitive_types() =>
+    public void NoneT_GetHashCode_returns_correct_value() =>
         RunUnitTests(new GetHashCode_returns_correct_value());
 
     private sealed class GetHashCode_returns_correct_value : IUnitTest1 {
@@ -360,7 +373,7 @@ public class GetHashCode_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="Maybe{T}.HasValue"/> tests.
+///   Unit test for <see cref="IMaybe{T}.HasValue"/> tests.
 /// </summary>
 [TestClass]
 public class HasValue_Property_Tests {
@@ -392,7 +405,7 @@ public class ToString_Tests {
 
     private sealed class ToString_creates_correct_representation_for_NoneT : IUnitTest0 {
         public void RunTest<T>() where T : notnull =>
-            Assert.AreEqual($"Maybe<{typeof(T).Name}>.None", Maybe<T>.None.ToString());
+            Assert.AreEqual($"IMaybe<{typeof(T).Name}>.None", Maybe<T>.None.ToString());
     }
 }
 

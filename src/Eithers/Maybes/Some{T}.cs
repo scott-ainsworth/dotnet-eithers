@@ -1,28 +1,28 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Ainsworth.Eithers;
 
 /// <summary>
-///   The subclass of <see cref="Maybe{T}"/> that represents a <see cref="Maybe{T}"/>
-///   that has a value.
+///   A realization of <see cref="IMaybe{T}"/> that represents a Maybe that has a value.
 /// </summary>
-/// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
+/// <typeparam name="T">The type of the value contained by the  <see cref="IMaybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("Some({Value})")]
-public sealed class Some<T> : Maybe<T> where T : notnull {
+public sealed class Some<T> : IMaybe<T> where T : notnull {
 
     #region Properties
 
     /// <inheritdoc/>
-    public override bool HasValue => true;
+    public bool HasValue => true;
 
     /// <summary>
-    ///   Gets the value wrapped by this <see cref="Maybe{T}"/> instance.
+    ///   Gets the value wrapped by this <see cref="IMaybe{T}"/> instance.
     /// </summary>
     /// <value>
-    ///   The value wrapped by this <see cref="Maybe{T}"/> instance.
+    ///   The value wrapped by this <see cref="IMaybe{T}"/> instance.
     /// </value>
     public T Value { get; private set; }
 
@@ -42,7 +42,7 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     }
 
     #endregion
-    #region IEquatable<T> and IEquatable<Maybe<T>> Implementations
+    #region IEquatable<T> and IEquatable<IMaybe<T>> Implementations
 
     /// <summary>
     ///   Determines whether the specified value equals this instance's wrapped value.
@@ -52,21 +52,29 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
     ///   value (<c>other == this.Value</c>); otherwise <see langword="false"/>.
     /// </returns>
-    public override bool Equals(T other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(T other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return Value.Equals(other);
     }
 
     /// <summary>
-    ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
+    ///   Determines whether the specified <see cref="IMaybe{T}"/> equals the current instance.
     /// </summary>
-    /// <param name="other">A <see cref="Maybe{T}"/> to compare with this instance.</param>
+    /// <param name="other">A <see cref="IMaybe{T}"/> to compare with this instance.</param>
     /// <returns>
     ///   <see langword="true"/> if <paramref name="other"/> is type <see cref="Some{T}"/> and
     ///   <paramref name="other"/>'s wrapped value equals to this instance's wrapped value
     ///   (<c>other.Value == this.Value</c>); otherwise, <see langword="false"/>.
     /// </returns>
-    public override bool Equals(Maybe<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(IMaybe<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return other is Some<T> s && Equals(s.Value);
     }
@@ -79,7 +87,11 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     ///   <see langword="false"/>; a <see cref="None{T}"/> can never equal a
     ///   <see cref="Some{T}"/>.
     /// </returns>
-    public override bool Equals(None<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(None<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return false;
     }
@@ -93,14 +105,18 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     ///   instance's wrapped value (<c>other.Value == this.Value</c>); otherwise,
     ///   <see langword="false"/>.
     /// </returns>
-    public override bool Equals(Some<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(Some<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return Value.Equals(other.Value);
     }
 
     // /// <inheritdoc/>
     /// <summary>
-    ///   Determines whether the specified object equals the current <see cref="Maybe{T}"/>
+    ///   Determines whether the specified object equals the current <see cref="IMaybe{T}"/>
     ///   instance.
     /// </summary>
     /// <param name="obj">An object to compare with this instance.</param>
@@ -124,15 +140,25 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     #region IEnumerable<T> Implementation
 
     /// <inheritdoc/>
-    public override IEnumerator<T> GetEnumerator() {
+    public IEnumerator<T> GetEnumerator() {
         yield return Value;
     }
+
+    /// <summary>
+    ///   Returns an enumerator that threats this <see cref="IMaybe{T}"/> as a collection
+    ///   of zero or one values.
+    /// </summary>
+    /// <returns>
+    ///   An <see cref="IEnumerator"/> instance that can be used to iterate through this
+    ///   instance's zero or one values.
+    /// </returns>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
     #region GetHasCode Implementation
 
     /// <summary>
-    ///   Returns the hash code for this <see cref="Maybe{T}"/>.
+    ///   Returns the hash code for this <see cref="IMaybe{T}"/>.
     /// </summary>
     /// <returns>
     ///   A 32-bit signed integer hash code.
@@ -165,7 +191,7 @@ public sealed class Some<T> : Maybe<T> where T : notnull {
     /// <returns>
     ///   <see langword="true"/>; <see cref="Some{T}"/> always wraps a value.
     /// </returns>
-    public override bool TryGetValue(out T value) {
+    public bool TryGetValue(out T value) {
         value = Value;
         return true;
     }

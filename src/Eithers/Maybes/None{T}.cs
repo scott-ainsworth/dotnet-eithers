@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -6,22 +7,20 @@ using System.Runtime.CompilerServices;
 namespace Ainsworth.Eithers;
 
 /// <summary>
-///   The subclass of <see cref="Maybe{T}"/> that represents a Maybe monad
-///   that does not value.
+///   A realization of <see cref="IMaybe{T}"/> that represents a Maybe that does not value.
 /// </summary>
 /// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("None")]
-public sealed class None<T> : Maybe<T>
-    where T : notnull {
+public sealed class None<T> : IMaybe<T> where T : notnull {
 
     #region Properties
 
     /// <inheritdoc/>
-    public override bool HasValue => false;
+    public bool HasValue => false;
 
     /// <summary>
-    ///   A singleton representing a <see cref="Maybe{T}"/> with no value.
+    ///   A singleton representing a <see cref="IMaybe{T}"/> with no value.
     /// </summary>
     /// <value>
     ///   The single instance of <see cref="None{T}"/>.
@@ -41,7 +40,7 @@ public sealed class None<T> : Maybe<T>
     private None() { }
 
     #endregion
-    #region IEquatable<T> and IEquatable<Maybe<T>> Implementations
+    #region IEquatable<T> and IEquatable<IMaybe<T>> Implementations
 
     /// <summary>
     ///   Determines whether the specified value equals this instance's wrapped value.
@@ -54,20 +53,28 @@ public sealed class None<T> : Maybe<T>
     /// <remarks>
     ///   Note: Since <see cref="None{T}"/> cannot have a value, this overload always returns false. 
     /// </remarks>
-    public override bool Equals(T other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(T other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return false;
     }
 
     /// <summary>
-    ///   Determines whether the specified <see cref="Maybe{T}"/> equals the current instance.
+    ///   Determines whether the specified <see cref="IMaybe{T}"/> equals the current instance.
     /// </summary>
-    /// <param name="other">A <see cref="Maybe{T}"/> to compare with this instance.</param>
+    /// <param name="other">A <see cref="IMaybe{T}"/> to compare with this instance.</param>
     /// <returns>
     ///   <see langword="true"/> if <paramref name="other"/> is equal to this instance; otherwise,
     ///   <see langword="false"/>.
     /// </returns>
-    public override bool Equals(Maybe<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(IMaybe<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return other == NoneSingleton;
     }
@@ -80,7 +87,11 @@ public sealed class None<T> : Maybe<T>
     ///   <see langword="true"/> if this instance and <paramref name="other"/>
     ///   are the same instance.
     /// </returns>
-    public override bool Equals(None<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(None<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return other == NoneSingleton;
     }
@@ -93,7 +104,11 @@ public sealed class None<T> : Maybe<T>
     ///   <see langword="false"/>; a <see cref="None{T}"/> and a <see cref="Some{T}"/> can
     ///   never be equal.
     /// </returns>
-    public override bool Equals(Some<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(Some<T> other) {
+        // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return false;
     }
@@ -113,9 +128,19 @@ public sealed class None<T> : Maybe<T>
     #region IEnumerable<T> Implementation
 
     /// <inheritdoc/>
-    public override IEnumerator<T> GetEnumerator() {
+    public IEnumerator<T> GetEnumerator() {
         yield break;
     }
+
+    /// <summary>
+    ///   Returns an enumerator that threats this <see cref="IMaybe{T}"/> as a collection
+    ///   of zero or one values.
+    /// </summary>
+    /// <returns>
+    ///   An <see cref="IEnumerator"/> instance that can be used to iterate through this
+    ///   instance's zero or one values.
+    /// </returns>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
     #region GetHasCode Implementation
@@ -141,7 +166,7 @@ public sealed class None<T> : Maybe<T>
     ///  A string that represents this <see cref="None{T}"/>.
     /// </returns>
     public override string ToString() =>
-        $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(None)}";
+        $"{nameof(IMaybe<T>)}<{typeof(T).Name}>.{nameof(Maybe<T>.None)}";
 
     #endregion
     #region TryGetValue
@@ -154,7 +179,7 @@ public sealed class None<T> : Maybe<T>
     /// <returns>
     ///   <see langword="false"/>; <see cref="Some{T}"/> never wraps a value.
     /// </returns>
-    public override bool TryGetValue(out T value) {
+    public bool TryGetValue(out T value) {
         value = default!;
         return false;
     }

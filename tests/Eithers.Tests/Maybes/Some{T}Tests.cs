@@ -9,7 +9,7 @@ using static TestSupport.TestRunner;
 // Disable SonarLint S2699 because most assertions are in called subroutines.
 #pragma warning disable S2699 // Test should include assertions
 
-namespace SomeT_Tests;
+namespace Maybes_SomeT_Tests;
 
 /// <summary>
 ///   Unit tests for <see cref="Maybe{T}"/> casts.
@@ -51,13 +51,13 @@ public class Constructor_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="Some{T}.Equals(Maybe{T})"/> tests.
+///   Unit test for <see cref="Some{T}.Equals(IMaybe{T})"/> tests.
 /// </summary>
 [TestClass]
 public class EqualsMaybeT_Tests {
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(Maybe{T})"/> method returns <see langword="false"/>
+    ///  The <see cref="Some{T}.Equals(IMaybe{T})"/> method returns <see langword="false"/>
     ///  not equal values.
     /// </summary>
     [TestMethod]
@@ -68,12 +68,12 @@ public class EqualsMaybeT_Tests {
         public void RunTest<T>(T value, T value2) where T : notnull {
             var some = Maybe.FromValue(value);
             var some2 = Maybe.FromValue(value2);
-            Assert.IsFalse(some.Equals((Maybe<T>)some2));
+            Assert.IsFalse(some.Equals((IMaybe<T>)some2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="Some{T}.Equals(Maybe{T})"/> method returns <see langword="false"/> None.
+    ///  The <see cref="Some{T}.Equals(IMaybe{T})"/> method returns <see langword="false"/> None.
     /// </summary>
     [TestMethod]
     public void SomeT_EqualsMaybeT_returns_false_None() =>
@@ -85,12 +85,12 @@ public class EqualsMaybeT_Tests {
             Justification = "Cast is necessary to force correct Equals() calls")]
         public void RunTest<T>(T value) where T : notnull {
             var some = Maybe.FromValue(value);
-            Assert.IsFalse(some.Equals((Maybe<T>)Maybe<T>.None));
+            Assert.IsFalse(some.Equals((IMaybe<T>)Maybe<T>.None));
         }
     }
 
     /// <summary>
-    ///  The <see cref="None{T}.Equals(Maybe{T})"/> method throws a
+    ///  The <see cref="Some{T}.Equals(IMaybe{T})"/> method throws a
     ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     /// <remarks>
@@ -104,13 +104,13 @@ public class EqualsMaybeT_Tests {
         public void RunTest<T>() where T : notnull {
             // Use 'null!' to simulate call from '#nullable disable' environment
             var ex = Assert.ThrowsException<ArgumentNullException>(
-                () => Maybe<T>.None.Equals((Maybe<T>)null!));
+                () => Maybe<T>.None.Equals((IMaybe<T>)null!));
             Assert.AreEqual("other", ex.ParamName);
         }
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(Maybe{T})"/> method returns <see langword="true"/>
+    ///  The <see cref="Some{T}.Equals(IMaybe{T})"/> method returns <see langword="true"/>
     ///  for equal values.
     /// </summary>
     [TestMethod]
@@ -121,7 +121,7 @@ public class EqualsMaybeT_Tests {
         public void RunTest<T>(T value) where T : notnull {
             var some = Maybe.FromValue(value);
             var some2 = Maybe.FromValue(value);
-            Assert.IsTrue(some.Equals((Maybe<T>)some2));
+            Assert.IsTrue(some.Equals((IMaybe<T>)some2));
         }
     }
 }
@@ -141,7 +141,7 @@ public class EqualsNoneT_Tests {
 
     private sealed class EqualsMaybeT_returns_false : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
             Assert.IsFalse(maybe.Equals((None<T>)Maybe<T>.None));
         }
     }
@@ -154,7 +154,7 @@ public class EqualsNoneT_Tests {
 public class EqualsObject_Tests {
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="false"/>
     ///  not equal values.
     /// </summary>
     [TestMethod]
@@ -163,14 +163,14 @@ public class EqualsObject_Tests {
 
     private sealed class EqualsObject_returns_false_for_not_equal_SomeT_value : IUnitTest2 {
         public void RunTest<T>(T value, T value2) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
-            Maybe<T> maybe2 = Maybe.FromValue(value2);
+            IMaybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe2 = Maybe.FromValue(value2);
             Assert.IsFalse(maybe.Equals((object)maybe2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="false"/>
     ///  not equal values.
     /// </summary>
     [TestMethod]
@@ -179,7 +179,7 @@ public class EqualsObject_Tests {
 
     private sealed class EqualsObject_returns_false_for_not_equal_value : IUnitTest2 {
         public void RunTest<T>(T value, T value2) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
             Assert.IsFalse(maybe.Equals((object)value2));
         }
     }
@@ -214,7 +214,7 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="true"/>
     ///  for equal value wrapped in <see cref="Some{T}"/>.
     /// </summary>
     [TestMethod]
@@ -223,14 +223,14 @@ public class EqualsObject_Tests {
 
     private sealed class EqualsObject_returns_true_for_equal_SomeT_value : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
-            Maybe<T> maybe2 = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe2 = Maybe.FromValue(value);
             Assert.IsTrue(maybe.Equals((object)maybe2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="true"/>
     ///  for equal values.
     /// </summary>
     [TestMethod]
@@ -239,7 +239,7 @@ public class EqualsObject_Tests {
 
     private sealed class EqualsObject_returns_true_for_equal_value : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
             Assert.IsTrue(maybe.Equals((object)value));
         }
     }
@@ -252,7 +252,7 @@ public class EqualsObject_Tests {
 public class EqualsSomeT_Tests {
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(Some{T})"/> method returns <see langword="false"/>
+    ///  The <see cref="Some{T}.Equals(Some{T})"/> method returns <see langword="false"/>
     ///  not equal values.
     /// </summary>
     [TestMethod]
@@ -302,7 +302,7 @@ public class EqualsSomeT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(Some{T})"/> method returns <see langword="true"/>
+    ///  The <see cref="Some{T}.Equals(Some{T})"/> method returns <see langword="true"/>
     ///  for equal values.
     /// </summary>
     [TestMethod]
@@ -319,13 +319,13 @@ public class EqualsSomeT_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="Maybe{T}.Equals(T)"/> tests.
+///   Unit test for <see cref="Some{T}.Equals(T)"/> tests.
 /// </summary>
 [TestClass]
 public class EqualsT_Tests {
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(T)"/> method returns <see langword="false"/>
+    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="false"/>
     ///  not equal values.
     /// </summary>
     [TestMethod]
@@ -334,13 +334,13 @@ public class EqualsT_Tests {
 
     private sealed class EqualsT_returns_false_for_not_equal_values : IUnitTest2 {
         public void RunTest<T>(T value, T value2) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
             Assert.IsFalse(maybe.Equals(value2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="Maybe{T}.Equals(T)"/> method returns <see langword="true"/>
+    ///  The <see cref="Some{T}.Equals(T)"/> method returns <see langword="true"/>
     ///  for equal values.
     /// </summary>
     [TestMethod]
@@ -349,20 +349,20 @@ public class EqualsT_Tests {
 
     private sealed class EqualsT_returns_true_for_equal_values : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            Maybe<T> maybe = Maybe.FromValue(value);
+            IMaybe<T> maybe = Maybe.FromValue(value);
             Assert.IsTrue(maybe.Equals(value));
         }
     }
 }
 
 /// <summary>
-///   Unit test for <see cref="Maybe{T}.GetEnumerator"/> tests.
+///   Unit test for <see cref="Some{T}.GetEnumerator"/> tests.
 /// </summary>
 [TestClass]
 public class GetEnumerator_Tests {
 
     /// <summary>
-    ///   The <see cref="Maybe{T}.GetEnumerator"/> methods return a correct
+    ///   The <see cref="Some{T}.GetEnumerator"/> methods return a correct
     ///   <see cref="IEnumerator{T}"/> for a <see cref="Some{T}"/>.
     /// </summary>
     [TestMethod]
@@ -372,6 +372,26 @@ public class GetEnumerator_Tests {
     private sealed class GetEnumerator_returns_correct_enumerator : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
             var enumerator = Maybe.FromValue(value).GetEnumerator();
+            Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.AreEqual(value, enumerator.Current);
+            Assert.IsFalse(enumerator.MoveNext());
+        }
+    }
+
+    /// <summary>
+    ///   The <see cref="IEnumerable{T}.GetEnumerator"/> methods returns a correct
+    ///   <see cref="IEnumerator"/> for a <see cref="Some{T}"/> cast to
+    ///   <see cref="IEnumerable"/>.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_IEnumeratorGetEnumerator_returns_correct_enumerator_for_Some_instance() =>
+        RunUnitTests(new IEnumeratorGetEnumerator_returns_correct_enumerator_for_Some_instance());
+
+    private sealed class IEnumeratorGetEnumerator_returns_correct_enumerator_for_Some_instance
+            : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var enumerator = ((IEnumerable)Maybe.FromValue(value)).GetEnumerator();
             Assert.IsInstanceOfType<IEnumerator>(enumerator);
             Assert.IsTrue(enumerator.MoveNext());
             Assert.AreEqual(value, enumerator.Current);
@@ -392,8 +412,7 @@ public class GetEnumerator_Tests {
 public class GetHashCode_Tests {
 
     /// <summary>
-    ///   The <see cref="object.GetHashCode"/> method returns the correct value
-    ///   for primitive type values.
+    ///   The <see cref="object.GetHashCode"/> method returns the correct value.
     /// </summary>
     [TestMethod]
     public void SomeT_GetHashCode_returns_correct_value() =>
@@ -409,7 +428,7 @@ public class GetHashCode_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="Maybe{T}.HasValue"/> tests.
+///   Unit test for <see cref="Some{T}.HasValue"/> tests.
 /// </summary>
 [TestClass]
 public class HasValue_Property_Tests {

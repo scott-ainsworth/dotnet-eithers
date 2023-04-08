@@ -8,7 +8,7 @@ using static TestSupport.TestRunner;
 // Disable SonarLint S4144 because it does not consider type constraints.
 #pragma warning disable S4144 // Methods should not have identical implementations
 
-namespace Maybe_Tests;
+namespace Maybes_Maybe_Tests;
 
 /// <summary>
 ///   Unit tests for <see cref="Maybe.From{T}(T?)"/> methods.
@@ -27,14 +27,14 @@ public class From_Tests {
     private sealed class From_creates_Some_from_value : IUnitTest1Split {
         public void RunTestOnReferenceType<T>(T value) where T : class {
             var maybe = Maybe.From((T?)value);
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<Some<T>>(maybe);
             var some = (maybe as Some<T>)!;
             Assert.AreEqual(value, some.Value);
         }
         public void RunTestOnValueType<T>(T value) where T : struct {
             var maybe = Maybe.From((T?)value);
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<Some<T>>(maybe);
             var some = (maybe as Some<T>)!;
             Assert.AreEqual(value, some.Value);
@@ -52,13 +52,13 @@ public class From_Tests {
     private sealed class From_returns_None_from_null : IUnitTest0Split {
         public void RunTestOnReferenceType<T>() where T : class {
             var maybe = Maybe.From((T?)null);
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<None<T>>(maybe);
             Assert.AreSame(Maybe<T>.None, maybe);
         }
         public void RunTestOnValueType<T>() where T : struct {
             var maybe = Maybe.From((T?)null);
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<None<T>>(maybe);
             Assert.AreSame(Maybe<T>.None, maybe);
         }
@@ -82,13 +82,13 @@ public class FromValue__Tests {
     private sealed class FromValue_creates_Some_from_value : IUnitTest1Split {
         public void RunTestOnReferenceType<T>(T value) where T : class {
             var some = Maybe.FromValue(value);
-            Assert.IsInstanceOfType<Maybe<T>>(some);
+            Assert.IsInstanceOfType<IMaybe<T>>(some);
             Assert.IsInstanceOfType<Some<T>>(some);
             Assert.AreEqual(value, some.Value);
         }
         public void RunTestOnValueType<T>(T value) where T : struct {
             var some = Maybe.FromValue(value);
-            Assert.IsInstanceOfType<Maybe<T>>(some);
+            Assert.IsInstanceOfType<IMaybe<T>>(some);
             Assert.IsInstanceOfType<Some<T>>(some);
             Assert.AreEqual(value, some.Value);
         }
@@ -138,14 +138,14 @@ public class ToMaybe_Tests {
     private sealed class ToMaybe_creates_Some_from_nullable_value : IUnitTest1Split {
         public void RunTestOnReferenceType<T>(T value) where T : class {
             var maybe = value.ToMaybe();
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<Some<T>>(maybe);
             var some = (Some<T>)maybe;
             Assert.AreEqual(value, some.Value);
         }
         public void RunTestOnValueType<T>(T value) where T : struct {
             var maybe = ((T?)value).ToMaybe();
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<Some<T>>(maybe);
             var some = (Some<T>)maybe;
             Assert.AreEqual(value, some.Value);
@@ -163,13 +163,13 @@ public class ToMaybe_Tests {
     private sealed class ToMaybe_returns_None_for_null : IUnitTest0Split {
         public void RunTestOnReferenceType<T>() where T : class {
             var maybe = ((T?)null).ToMaybe();
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<None<T>>(maybe);
             Assert.AreSame(Maybe<T>.None, maybe);
         }
         public void RunTestOnValueType<T>() where T : struct {
             var maybe = ((T?)null).ToMaybe();
-            Assert.IsInstanceOfType<Maybe<T>>(maybe);
+            Assert.IsInstanceOfType<IMaybe<T>>(maybe);
             Assert.IsInstanceOfType<None<T>>(maybe);
             Assert.AreSame(Maybe<T>.None, maybe);
         }
@@ -193,13 +193,13 @@ public class ToSome_Tests {
     private sealed class ToSome_creates_Some_from_value : IUnitTest1Split {
         public void RunTestOnReferenceType<T>(T value) where T : class {
             var some = value.ToSome();
-            Assert.IsInstanceOfType<Maybe<T>>(some);
+            Assert.IsInstanceOfType<IMaybe<T>>(some);
             Assert.IsInstanceOfType<Some<T>>(some);
             Assert.AreEqual(value, some.Value);
         }
         public void RunTestOnValueType<T>(T value) where T : struct {
             var some = value.ToSome();
-            Assert.IsInstanceOfType<Maybe<T>>(some);
+            Assert.IsInstanceOfType<IMaybe<T>>(some);
             Assert.IsInstanceOfType<Some<T>>(some);
             Assert.AreEqual(value, some.Value);
         }
