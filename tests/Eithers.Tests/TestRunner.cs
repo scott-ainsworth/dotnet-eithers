@@ -12,112 +12,160 @@ namespace TestSupport;
 /// <see href="https://stackoverflow.com/questions/9412450/passing-a-generic-function-as-a-parameter"/>
 public static class TestRunner {
 
-    public static void RunUnitTests(IUnitTest0Split action) {
+    /// <summary>
+    ///   Run a unit test case, that requires no value arguments and separate functions for
+    ///   the class and struct type constraints, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest0Split unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTestOnValueType<FileAccess>();
-        action.RunTestOnValueType<int>();
+        unitTest.RunTestOnValueType<FileAccess>();
+        unitTest.RunTestOnValueType<int>();
 
         // Value Types
-        action.RunTestOnValueType<(int, string)>();
-        action.RunTestOnValueType<decimal>();
+        unitTest.RunTestOnValueType<(int, string)>();
+        unitTest.RunTestOnValueType<decimal>();
 
         // Reference Types
-        action.RunTestOnReferenceType<string>();
-        action.RunTestOnReferenceType<int[]>();
-        action.RunTestOnReferenceType<TimeZoneInfo>();
+        unitTest.RunTestOnReferenceType<string>();
+        unitTest.RunTestOnReferenceType<int[]>();
+        unitTest.RunTestOnReferenceType<TimeZoneInfo>();
     }
 
-    public static void RunUnitTests(IUnitTest1Split action) {
+    /// <summary>
+    ///   Run a unit test case, that requires one value argument and separate functions for
+    ///   the class and struct type constraints, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest1Split unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTestOnValueType(FileAccess.Read);
-        action.RunTestOnValueType(111);
+        unitTest.RunTestOnValueType(FileAccess.Read);
+        unitTest.RunTestOnValueType(111);
 
         // Value Types
-        action.RunTestOnValueType((111, "111"));
-        action.RunTestOnValueType((decimal)111);
+        unitTest.RunTestOnValueType((111, "111"));
+        unitTest.RunTestOnValueType((decimal)111);
 
         // Reference Types
-        action.RunTestOnReferenceType("111");
-        action.RunTestOnReferenceType(new int[] { 111 });
-        action.RunTestOnReferenceType(TimeZoneInfo.Local);
+        unitTest.RunTestOnReferenceType("111");
+        unitTest.RunTestOnReferenceType(new int[] { 111 });
+        unitTest.RunTestOnReferenceType(TimeZoneInfo.Local);
     }
 
-    public static void RunUnitTests(IUnitTest2Split action) {
+    /// <summary>
+    ///   Run a unit test case, that requires two value arguments and separate functions for
+    ///   the class and struct type constraints, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest2Split unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTestOnValueType(FileAccess.Read, FileAccess.Write);
-        action.RunTestOnValueType(111, 222);
+        unitTest.RunTestOnValueType(FileAccess.Read, FileAccess.Write);
+        unitTest.RunTestOnValueType(111, 222);
 
         // Value Types
-        action.RunTestOnValueType((111, "111"), (222, "222"));
-        action.RunTestOnValueType<decimal>(111, 222);
+        unitTest.RunTestOnValueType((111, "111"), (222, "222"));
+        unitTest.RunTestOnValueType<decimal>(111, 222);
 
         // Reference Types
-        action.RunTestOnReferenceType("111", "222");
-        action.RunTestOnReferenceType(new int[] { 111 }, new int[] { 222 });
-        action.RunTestOnReferenceType(TimeZoneInfo.Local, TimeZoneInfo.Utc);
+        unitTest.RunTestOnReferenceType("111", "222");
+        unitTest.RunTestOnReferenceType(new int[] { 111 }, new int[] { 222 });
+        unitTest.RunTestOnReferenceType(TimeZoneInfo.Local, TimeZoneInfo.Utc);
     }
 
-    public static void RunUnitTests(IUnitTest0 action) {
+    /// <summary>
+    ///   Run a unit test case, that requires no value arguments and single function for
+    ///   the notnull type constraint, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest0 unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTest<FileAccess>();
-        action.RunTest<int>();
+        unitTest.RunTest<FileAccess>();
+        unitTest.RunTest<int>();
 
         // Value Types
-        action.RunTest<(int, string)>();
-        action.RunTest<decimal>();
+        unitTest.RunTest<(int, string)>();
+        unitTest.RunTest<decimal>();
 
         // Reference Types
-        action.RunTest<string>();
-        action.RunTest<int[]>();
-        action.RunTest<TimeZoneInfo>();
+        unitTest.RunTest<string>();
+        unitTest.RunTest<int[]>();
+        unitTest.RunTest<TimeZoneInfo>();
     }
 
-    public static void RunUnitTests(IUnitTest1 action) {
+    /// <summary>
+    ///   Run a unit test case, that requires one value argument and single function for
+    ///   the notnull type constraint, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest1 unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTest(FileAccess.Read);
-        action.RunTest(111);
+        unitTest.RunTest(FileAccess.Read);
+        unitTest.RunTest(111);
 
         // Value Types
-        action.RunTest((111, "111"));
-        action.RunTest((decimal)111);
+        unitTest.RunTest((111, "111"));
+        unitTest.RunTest((decimal)111);
 
         // Reference Types
-        action.RunTest("111");
-        action.RunTest(new int[] { 111 });
-        action.RunTest(TimeZoneInfo.Local);
+        unitTest.RunTest("111");
+        unitTest.RunTest(new int[] { 111 });
+        unitTest.RunTest(TimeZoneInfo.Local);
     }
 
-    public static void RunUnitTests(IUnitTest2 action) {
+    /// <summary>
+    ///   Run a unit test case, that requires two value arguments and single function for
+    ///   the notnull type constraint, on mulitple types.
+    /// </summary>
+    /// <param name="unitTest">The unit test case to run.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="unitTest"/> is null;
+    /// </exception>
+    public static void RunUnitTests(IUnitTest2 unitTest) {
 
-        _ = action ?? throw new ArgumentNullException(nameof(action));
+        _ = unitTest ?? throw new ArgumentNullException(nameof(unitTest));
 
         // Primitive Types
-        action.RunTest(FileAccess.Read, FileAccess.Write);
-        action.RunTest(111, 222);
+        unitTest.RunTest(FileAccess.Read, FileAccess.Write);
+        unitTest.RunTest(111, 222);
 
         // Value Types
-        action.RunTest((111, "111"), (222, "222"));
-        action.RunTest<decimal>(111, 222);
+        unitTest.RunTest((111, "111"), (222, "222"));
+        unitTest.RunTest<decimal>(111, 222);
 
         // Reference Types
-        action.RunTest("111", "222");
-        action.RunTest(new int[] { 111 }, new int[] { 222 });
-        action.RunTest(TimeZoneInfo.Local, TimeZoneInfo.Utc);
+        unitTest.RunTest("111", "222");
+        unitTest.RunTest(new int[] { 111 }, new int[] { 222 });
+        unitTest.RunTest(TimeZoneInfo.Local, TimeZoneInfo.Utc);
     }
 
 }
