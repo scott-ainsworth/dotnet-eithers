@@ -1,6 +1,6 @@
 using System.Reflection;
 
-using Ainsworth.Eithers.Results;
+using Ainsworth.Monads.Results;
 
 using TestSupport;
 using static TestSupport.TestRunner;
@@ -8,16 +8,16 @@ using static TestSupport.TestRunner;
 // Disable SonarLint S2699 because most assertions are in called subroutines.
 #pragma warning disable S2699 // Test should include assertions
 
-namespace ValueResultT_Tests;
+namespace Results_Ok_Tests;
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}"/> constructors.
+///   Unit tests for <see cref="Ok{T}"/> constructors.
 /// </summary>
 [TestClass]
 public class Constructor_Checks {
 
     /// <summary>
-    ///   The <see cref="ValueResult{T}"/> constructors' visibility is not public.
+    ///   The <see cref="Ok{T}"/> constructors' visibility is not public.
     ///   This is a design assumptions check.
     /// </summary>
     [TestMethod]
@@ -26,7 +26,7 @@ public class Constructor_Checks {
 
     private sealed class Constructors_are_protected : IUnitTest0 {
         public void RunTest<T>() where T : notnull {
-            var type = typeof(ErrorResult<T>);
+            var type = typeof(Err<T>);
             var publicConstructors = type.GetConstructors(
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
             Assert.IsFalse(
@@ -37,13 +37,13 @@ public class Constructor_Checks {
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.Equals(ErrorResult{T})"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(Err{T})"/>.
 /// </summary>
 [TestClass]
 public class EqualsErrorResultT_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(ErrorResult{T})"/> method returns
+    ///  The <see cref="Ok{T}.Equals(Err{T})"/> method returns
     ///  <see langword="false"/>.
     /// </summary>
     [TestMethod]
@@ -59,7 +59,7 @@ public class EqualsErrorResultT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ErrorResult{T}.Equals(ErrorResult{T})"/> methods throws a
+    ///  The <see cref="Err{T}.Equals(Err{T})"/> methods throws a
     ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     /// <remarks>
@@ -74,21 +74,21 @@ public class EqualsErrorResultT_Tests {
             var result = Result.From(value);
             // Use 'null!' to simulate call from '#nullable disable' environment
             var ex = Assert.ThrowsException<ArgumentNullException>(
-                () => result.Equals((ErrorResult<T>)null!));
+                () => result.Equals((Err<T>)null!));
             Assert.AreEqual("other", ex.ParamName);
         }
     }
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.Equals(Exception)"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(Exception)"/>.
 /// </summary>
 [TestClass]
 public class EqualsException_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Exception)"/> method returns <see langword="false"/>
-    ///  for an <see cref="ErrorResult{T}"/> argument.
+    ///  The <see cref="Ok{T}.Equals(Exception)"/> method returns <see langword="false"/>
+    ///  for an <see cref="Err{T}"/> argument.
     /// </summary>
     [TestMethod]
     public void ValueResultT_EqualsException_returns_false_for_error() =>
@@ -102,7 +102,7 @@ public class EqualsException_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Exception)"/> method throws a
+    ///  The <see cref="Ok{T}.Equals(Exception)"/> method throws a
     ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     /// <remarks>
@@ -124,14 +124,14 @@ public class EqualsException_Tests {
 }
 
 /// <summary>z
-///   Unit tests for <see cref="ValueResult{T}.Equals(object)"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(object)"/>.
 /// </summary>
 [TestClass]
 public class EqualsObject_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="false"/>
-    ///  for an <see cref="ErrorResult{T}"/> argument.
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  for an <see cref="Err{T}"/> argument.
     /// </summary>
     [TestMethod]
     public void ValueResultT_EqualsObject_returns_false_for_error() =>
@@ -146,7 +146,7 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="false"/>
     ///  for a value argument that does not equal the wrapped value.
     /// </summary>
     [TestMethod]
@@ -161,8 +161,8 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="false"/>
-    ///  for a <see cref="ValueResult{T}"/> argument that wraps a different value.
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  for a <see cref="Ok{T}"/> argument that wraps a different value.
     /// </summary>
     [TestMethod]
     public void ValueResultT_EqualsObject_returns_false_for_not_equal_ValueResultT_value() =>
@@ -177,7 +177,7 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="false"/>
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="false"/>
     ///  for a <see langword="null"/> argument.
     /// </summary>
     [TestMethod]
@@ -193,7 +193,7 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="true"/>
     ///  for a value argument that equals this instance's wrapped value.
     /// </summary>
     [TestMethod]
@@ -208,8 +208,8 @@ public class EqualsObject_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(object)"/> method returns <see langword="true"/>
-    ///  for a <see cref="ValueResult{T}"/> argument wrapping value equal to this instance's
+    ///  The <see cref="Ok{T}.Equals(object)"/> method returns <see langword="true"/>
+    ///  for a <see cref="Ok{T}"/> argument wrapping value equal to this instance's
     ///  wrapped value.
     /// </summary>
     [TestMethod]
@@ -226,14 +226,14 @@ public class EqualsObject_Tests {
 }
 
 /// <summary>z
-///   Unit tests for <see cref="ValueResult{T}.Equals(Result{T})"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(IResult{T})"/>.
 /// </summary>
 [TestClass]
 public class EqualsResultT_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Result{T})"/> method returns <see langword="false"/>
-    ///  for an <see cref="ErrorResult{T}"/> argument.
+    ///  The <see cref="Ok{T}.Equals(IResult{T})"/> method returns <see langword="false"/>
+    ///  for an <see cref="Err{T}"/> argument.
     /// </summary>
     [TestMethod]
     public void ValueResultT_EqualsResultT_returns_false_for_error() =>
@@ -243,13 +243,13 @@ public class EqualsResultT_Tests {
         public void RunTest<T>(T value) where T : notnull {
             var result = Result.From(value);
             var result2 = Result.From<T>(new ArgumentException("test"));
-            Assert.IsFalse(result.Equals((Result<T>)result2));
+            Assert.IsFalse(result.Equals((IResult<T>)result2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Result{T})"/> method returns <see langword="false"/>
-    ///  for a <see cref="ValueResult{T}"/> argument that wraps a different value.
+    ///  The <see cref="Ok{T}.Equals(IResult{T})"/> method returns <see langword="false"/>
+    ///  for a <see cref="Ok{T}"/> argument that wraps a different value.
     /// </summary>
     [TestMethod]
     public void ValueResultT_EqualsResultT_returns_false_for_not_equal_ValueResultT_value() =>
@@ -259,12 +259,12 @@ public class EqualsResultT_Tests {
         public void RunTest<T>(T value, T value2) where T : notnull {
             var result = Result.From(value);
             var result2 = Result.From(value2);
-            Assert.IsFalse(result.Equals((Result<T>)result2));
+            Assert.IsFalse(result.Equals((IResult<T>)result2));
         }
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Result{T})"/> method throws a
+    ///  The <see cref="Ok{T}.Equals(IResult{T})"/> method throws a
     ///  <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     /// <remarks>
@@ -279,14 +279,14 @@ public class EqualsResultT_Tests {
             var result = Result.From(value);
             // Use 'null!' to simulate call from '#nullable disable' environment
             var ex = Assert.ThrowsException<ArgumentNullException>(
-                () => result.Equals((Result<T>)null!));
+                () => result.Equals((IResult<T>)null!));
             Assert.AreEqual("other", ex.ParamName);
         }
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(Result{T})"/> method returns <see langword="true"/>
-    ///  for a <see cref="ValueResult{T}"/> argument wrapping value equal to this instance's
+    ///  The <see cref="Ok{T}.Equals(IResult{T})"/> method returns <see langword="true"/>
+    ///  for a <see cref="Ok{T}"/> argument wrapping value equal to this instance's
     ///  wrapped value.
     /// </summary>
     [TestMethod]
@@ -297,19 +297,19 @@ public class EqualsResultT_Tests {
         public void RunTest<T>(T value) where T : notnull {
             var result = Result.From(value);
             var result2 = Result.From(value);
-            Assert.IsTrue(result.Equals((Result<T>)result2));
+            Assert.IsTrue(result.Equals((IResult<T>)result2));
         }
     }
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.Equals(T)"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(T)"/>.
 /// </summary>
 [TestClass]
 public class EqualsT_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(T)"/> method returns <see langword="true"/> for
+    ///  The <see cref="Ok{T}.Equals(T)"/> method returns <see langword="true"/> for
     ///  a value argument equal to this instance's wrapped value.
     /// </summary>
     [TestMethod]
@@ -324,7 +324,7 @@ public class EqualsT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(T)"/> method returns <see langword="false"/> for
+    ///  The <see cref="Ok{T}.Equals(T)"/> method returns <see langword="false"/> for
     ///  a value does not equal this instance's wrapped value.
     /// </summary>
     [TestMethod]
@@ -339,7 +339,7 @@ public class EqualsT_Tests {
     }
 
     /// <summary>
-    ///   The <see cref="ValueResult{T}.Equals(T)"/> method throws
+    ///   The <see cref="Ok{T}.Equals(T)"/> method throws
     ///   <see cref="ArgumentNullException"/> for a <see langword="null"/> argument.
     /// </summary>
     [TestMethod]
@@ -360,14 +360,14 @@ public class EqualsT_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.Equals(ValueResult{T})"/>.
+///   Unit tests for <see cref="Ok{T}.Equals(Ok{T})"/>.
 /// </summary>
 [TestClass]
 public class EqualsValueResultT_Tests {
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(ValueResult{T})"/> method returns
-    ///  <see langword="false"/> for a <see cref="ValueResult{T}"/> that wraps a
+    ///  The <see cref="Ok{T}.Equals(Ok{T})"/> method returns
+    ///  <see langword="false"/> for a <see cref="Ok{T}"/> that wraps a
     ///  different value.
     /// </summary>
     [TestMethod]
@@ -383,8 +383,8 @@ public class EqualsValueResultT_Tests {
     }
 
     /// <summary>
-    ///  The <see cref="ValueResult{T}.Equals(ValueResult{T})"/> method returns
-    ///  <see langword="true"/> for a <see cref="ValueResult{T}"/> argument wrapping
+    ///  The <see cref="Ok{T}.Equals(Ok{T})"/> method returns
+    ///  <see langword="true"/> for a <see cref="Ok{T}"/> argument wrapping
     ///  an equal value.
     /// </summary>
     [TestMethod]
@@ -401,13 +401,13 @@ public class EqualsValueResultT_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.TryGetValue(out T)"/>.
+///   Unit tests for <see cref="Ok{T}.TryGetValue(out T)"/>.
 /// </summary>
 [TestClass]
 public class TryGetValue_Tests {
 
     /// <summary>
-    ///   The <see cref="ValueResult{T}.TryGetValue(out T)"/> method returns true
+    ///   The <see cref="Ok{T}.TryGetValue(out T)"/> method returns true
     ///   and the wrapped value.
     /// </summary>
     [TestMethod]
@@ -424,13 +424,13 @@ public class TryGetValue_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="ValueResult{T}.TryGetException(out Exception)"/>.
+///   Unit tests for <see cref="Ok{T}.TryGetException(out Exception)"/>.
 /// </summary>
 [TestClass]
 public class TryGetException_Tests {
 
     /// <summary>
-    ///   The <see cref="ValueResult{T}.TryGetException(out Exception)"/> method returns false
+    ///   The <see cref="Ok{T}.TryGetException(out Exception)"/> method returns false
     ///   and the default value for <see cref="Exception"/> when an exception is wrapped.
     /// </summary>
     [TestMethod]
@@ -440,7 +440,7 @@ public class TryGetException_Tests {
     private sealed class TryGetException_returns_false_and_default
             : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            var result = (Result<T>)Result.From(value);
+            var result = (IResult<T>)Result.From(value);
             Assert.IsFalse(result.TryGetException(out var returnedEx));
             Assert.AreEqual(default, returnedEx);
         }

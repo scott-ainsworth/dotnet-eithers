@@ -1,28 +1,36 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace Ainsworth.Eithers.Results;
+namespace Ainsworth.Monads.Results;
 
 /// <summary>
-///   The subclass of <see cref="Result{T}"/> that represents a successful result
+///   The subclass of <see cref="IResult{T}"/> that represents a successful result
 ///   that has a value.
 /// </summary>
-/// <typeparam name="T">The type of the value contained by the <see cref="Result{T}"/>
+/// <typeparam name="T">The type of the value contained by the <see cref="IResult{T}"/>
 ///   superclass.</typeparam>
-public sealed class ValueResult<T> : Result<T> where T : notnull {
+public sealed class Ok<T> : IResult<T> where T : notnull {
 
     #region Properties
 
     /// <inheritdoc/>
     /// <remarks>
-    ///   <see cref="IsValue"/> is always <see wrapped="true"/> for <see cref="ValueResult{T}"/>
+    ///   <see cref="IsValue"/> is always <see wrapped="true"/> for <see cref="Ok{T}"/>
     ///   instances.
     /// </remarks>
-    public override bool IsValue => true;
+    public bool IsValue => true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    ///   <see cref="IsError"/> is always <see wrapped="false"/> for <see cref="Ok{T}"/>
+    ///   instances.
+    /// </remarks>
+    public bool IsError => false;
 
     private readonly T value;
 
-    internal ValueResult(T value) {
+    internal Ok(T value) {
         this.value = value;
     }
 
@@ -30,7 +38,7 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     #region Constructors, Casts, and Conversions
 
     /// <summary>
-    ///   Unwrap this <see cref="ErrorResult{T}"/>'s value.
+    ///   Unwrap this <see cref="Err{T}"/>'s value.
     /// </summary>
     /// <returns>
     ///   The wrapped value.
@@ -38,7 +46,7 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     public T ToValue() => value;
 
     #endregion
-    #region IEquatable<Result<T>>, IEquatable<T>, and IEquatable Implementations
+    #region IEquatable<IResult<T>>, IEquatable<T>, and IEquatable Implementations
 
     /// <summary>
     ///   Determines whether the specified value equals this instance's wrapped value.
@@ -48,7 +56,10 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
     ///   value (<c>other == this.ToValue()</c>); otherwise <see langword="false"/>.
     /// </returns>
-    public override bool Equals(T other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(T other) {
         // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return other.Equals(value);
@@ -60,52 +71,61 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     /// <param name="other">An <see cref="Exception"/> to compare with this instance.</param>
     /// <returns>
     ///   <see langword="false"/>; an <see cref="Exception"/> cannot equal
-    ///   a <see cref="ValueResult{T}"/>.
+    ///   a <see cref="Ok{T}"/>.
     /// </returns>
-    public override bool Equals(Exception other) {
+    public bool Equals(Exception other) {
         // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return false;
     }
 
     /// <summary>
-    ///   Determines whether the specified <see cref="Result{T}"/> equals the current instance.
+    ///   Determines whether the specified <see cref="IResult{T}"/> equals the current instance.
     /// </summary>
-    /// <param name="other">A <see cref="Result{T}"/> to compare with this instance.</param>
+    /// <param name="other">A <see cref="IResult{T}"/> to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="true"/> if <paramref name="other"/> is a <see cref="ValueResult{T}"/>
+    ///   <see langword="true"/> if <paramref name="other"/> is a <see cref="Ok{T}"/>
     ///   its wrapped value equals this instances wrapped value
     ///   (<c>other.ToValue() == this.ToValue()</c>).
     /// </returns>
-    public override bool Equals(Result<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(IResult<T> other) {
         // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
-        return other is ValueResult<T> r && Equals(r);
+        return other is Ok<T> r && Equals(r);
     }
 
     /// <summary>
-    ///   Determines whether the specified <see cref="ErrorResult{T}"/> equals the current instance.
+    ///   Determines whether the specified <see cref="Err{T}"/> equals the current instance.
     /// </summary>
-    /// <param name="other">An <see cref="ErrorResult{T}"/> to compare with this instance.</param>
+    /// <param name="other">An <see cref="Err{T}"/> to compare with this instance.</param>
     /// <returns>
-    ///   <see langword="false"/>; an <see cref="ErrorResult{T}"/> cannot equal
-    ///   a <see cref="ValueResult{T}"/>.
+    ///   <see langword="false"/>; an <see cref="Err{T}"/> cannot equal
+    ///   a <see cref="Ok{T}"/>.
     /// </returns>
-    public override bool Equals(ErrorResult<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(Err<T> other) {
         // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return false;
     }
 
     /// <summary>
-    ///   Determines whether the specified <see cref="Result{T}"/> equals the current instance.
+    ///   Determines whether the specified <see cref="IResult{T}"/> equals the current instance.
     /// </summary>
-    /// <param name="other">An <see cref="ValueResult{T}"/> to compare with this instance.</param>
+    /// <param name="other">An <see cref="Ok{T}"/> to compare with this instance.</param>
     /// <returns>
     ///   <see langword="true"/> if the two instance's wrapped values are equal;
     ///   otherwise, <see langword="false"/>.
     /// </returns>
-    public override bool Equals(ValueResult<T> other) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design", "CA1065:Do not raise exceptions in unexpected locations",
+        Justification = "For this library, Equals(null) is invalid.")]
+    public bool Equals(Ok<T> other) {
         // Null check for callers that don't use code analyzers to catch errors
         _ = other ?? throw new ArgumentNullException(nameof(other));
         return Equals(other.value);
@@ -119,20 +139,20 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     ///   <list type="bullet">
     ///     <item><see langword="true"/> if <paramref name="obj"/> is a <typeparamref name="T"/>
     ///       and it equals this instance's wrapped value (<c>other == this.ToValue()</c>)</item>;
-    ///     <item><see langword="true"/> if <paramref name="obj"/> is a <see cref="ValueResult{T}"/>
+    ///     <item><see langword="true"/> if <paramref name="obj"/> is a <see cref="Ok{T}"/>
     ///       and its wrapped value equals this instance's wrapped value
     ///       (<c>other.ToValue() == this.ToValue()</c>);</item>
     ///     <item>Otherwise, <see langword="false"/>.</item>
     ///   </list>
     /// </returns>
     public override bool Equals(object obj) => obj switch {
-        ValueResult<T> r => Equals(r),
+        Ok<T> r => Equals(r),
         T v => Equals(v),
         _ => false
     };
 
     #endregion
-    #region Object Overrides
+    #region GetHashCode Implementation
 
     /// <summary>
     ///   Computes the hash code for this instance.
@@ -141,22 +161,33 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     ///   The hash code for this instance.
     /// </returns>
     /// <remarks>
-    ///   The hash code for a <see cref="ErrorResult{T}"/> is the hash code of its wrapped value.
+    ///   The hash code for a <see cref="Err{T}"/> is the hash code of its wrapped value.
     /// </remarks>
     public override int GetHashCode() => value.GetHashCode();
 
     #endregion
-    #region IEnumerator<T> Implementation
+    #region IEnumerable Implementations
 
     /// <inheritdoc/>
-    public override IEnumerator<T> GetEnumerator() {
+    /// <summary>
+    ///   Returns an enumerator that threats this <see cref="IResult{T}"/> as a collection
+    ///   of zero or one values.
+    /// </summary>
+    /// <returns>
+    ///   An <see cref="IEnumerator{T}"/> instance that can be used to iterate through
+    ///   this instance's zero or one <see cref="Exception"/>s.
+    /// </returns>
+    public IEnumerator<T> GetEnumerator() {
         yield return value;
     }
 
     /// <inheritdoc/>
-    public override IEnumerator<Exception> GetErrorEnumerator() {
+    public IEnumerator<Exception> GetErrorEnumerator() {
         yield break;
     }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
     #region TryGetValue & TryGetException
@@ -167,9 +198,9 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     /// <param name="value">When this method returns, contains the value wrapped by this
     ///   instance.</param>
     /// <returns>
-    ///   <see langword="true"/>; <see cref="Some{T}"/> always wraps a value.
+    ///   <see langword="true"/>; <see cref="Ok{T}"/> always wraps a value.
     /// </returns>
-    public override bool TryGetValue(out T value) {
+    public bool TryGetValue(out T value) {
         value = this.value;
         return true;
     }
@@ -182,7 +213,7 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     /// <returns>
     ///   <see langword="false"/>.
     /// </returns>
-    public override bool TryGetException(out Exception ex) {
+    public bool TryGetException(out Exception ex) {
         ex = default!;
         return false;
     }
