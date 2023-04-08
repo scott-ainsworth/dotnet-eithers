@@ -44,7 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Eithers\Ainsworth.Eithers.csproj" />
-		<ProjectReference Include="..\TestSupport\TestSupport.csproj" />
+	  <ProjectReference Include="..\..\src\Eithers\Ainsworth.Eithers.csproj" />
 	</ItemGroup>
 </Project>
