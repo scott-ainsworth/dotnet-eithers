@@ -187,9 +187,8 @@ public class EqualsNoneT_Tests {
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Style", "IDE0004:Remove Unnecessary Cast",
             Justification = "Cast ensures desired instance of Equals is used.")]
-        public void RunTest<T>() where T : notnull {
+        public void RunTest<T>() where T : notnull =>
             Assert.IsFalse(Maybe<T>.None.Equals(Maybe<bool>.None));
-        }
     }
 
     /// <summary>

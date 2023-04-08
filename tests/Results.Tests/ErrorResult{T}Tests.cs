@@ -41,7 +41,7 @@ public class Constructor_Checks {
     ///   An <see cref="ErrorResult{T}"/> cannot be created from a <see langword="null"/>.
     /// </summary>
     [TestMethod]
-    public void ErrorResult_construction_throws_if_T_is_Exception() =>
+    public void ErrorResultT_construction_throws_if_T_is_Exception() =>
         RunUnitTests(new Construction_throws_if_T_is_Exception());
 
     private sealed class Construction_throws_if_T_is_Exception : IUnitTest0 {
@@ -427,7 +427,7 @@ public class EqualsValueResultT_Tests {
     private sealed class EqualsValueResultT_returns_false : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
             var result = Result.From<T>(new ArgumentException("test"));
-            var result2 = Result.From<T>(value);
+            var result2 = Result.From(value);
             Assert.IsFalse(result.Equals(result2));
         }
     }

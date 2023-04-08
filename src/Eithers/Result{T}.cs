@@ -33,7 +33,7 @@ public abstract class Result<T>
     ///   Indicates whether or not this instance wraps an exception.
     /// </summary>
     /// <value>
-    ///   <see langword="true"/> if this instance wraps aand excpetion;
+    ///   <see langword="true"/> if this instance wraps and exception;
     ///   otherwise, <see langword="false"/>
     /// </value>
     public bool IsError => !IsValue;
@@ -145,7 +145,7 @@ public abstract class Result<T>
     ///   has not been implemented in a descendent class and
     ///   <see cref="Result{T}.GetHashCode"/> is called as a result.</exception>
     /// <remarks>
-    ///   <strong>Warning</strong>: GetHashCodemust be implemented in every descendent class.
+    ///   <strong>Warning</strong>: GetHashCode must be implemented in every descendent class.
     ///   If not implemented, this default implementation throws a
     ///   <see cref="NotImplementedException"/>.
     /// </remarks>

@@ -53,7 +53,7 @@ public class GetEnumerator_Tests {
 
     private sealed class GetEnumerator_returns_correct_enumerator_for_wrapped_value : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            var result = Result.From<T>(value);
+            var result = Result.From(value);
             var enumerator = result.GetEnumerator();
             Assert.IsInstanceOfType<IEnumerator<T>>(enumerator);
             Assert.IsTrue(enumerator.MoveNext());
@@ -91,7 +91,7 @@ public class GetEnumerator_Tests {
     private sealed class IEnumerator_GetEnumerator_returns_correct_enumerator_for_wrapped_value
             : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            var result = Result.From<T>(value);
+            var result = Result.From(value);
             var enumerator = ((IEnumerable)result).GetEnumerator();
             Assert.IsInstanceOfType<IEnumerator>(enumerator);
             Assert.IsTrue(enumerator.MoveNext());
@@ -120,7 +120,7 @@ public class GetErrorEnumerator_Tests {
     private sealed class GetErrorEnumerator_returns_correct_enumerator_for_wrapped_value
             : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull {
-            var result = Result.From<T>(value);
+            var result = Result.From(value);
             var enumerator = result.GetErrorEnumerator();
             Assert.IsInstanceOfType<IEnumerator<Exception>>(enumerator);
             Assert.IsFalse(enumerator.MoveNext());
@@ -188,8 +188,8 @@ public class GetHashCode_Tests {
             Assert.AreEqual(result.GetHashCode(), ex.GetHashCode());
             var result2 = Result.From<T>(new ArgumentException("test"));
             Assert.AreNotEqual(result.GetHashCode(), result2.GetHashCode());
-            var resultv = Result.From(value);
-            Assert.AreNotEqual(result.GetHashCode(), resultv.GetHashCode());
+            var result3 = Result.From(value);
+            Assert.AreNotEqual(result.GetHashCode(), result3.GetHashCode());
         }
     }
 }
