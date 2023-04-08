@@ -164,7 +164,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     }
 
     #endregion
-    #region TryGetValue
+    #region TryGetValue & TryGetException
 
     /// <summary>
     ///   Gets the value wrapped by this instance.
@@ -177,6 +177,19 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     public override bool TryGetValue(out T value) {
         value = default!;
         return false;
+    }
+
+    /// <summary>
+    ///   Gets the exception wrapped by this instance.
+    /// </summary>
+    /// <param name="ex">When this method returns, contains the exception wrapped by
+    ///   this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/>.
+    /// </returns>
+    public override bool TryGetException(out Exception ex) {
+        ex = Exception;
+        return true;
     }
 
     #endregion

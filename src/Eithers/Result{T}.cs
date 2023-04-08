@@ -192,7 +192,7 @@ public abstract class Result<T>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
-    #region TryGetValue
+    #region TryGetValue & TryGetException
 
     /// <summary>
     ///   Gets the value wrapped by this instance.
@@ -205,6 +205,18 @@ public abstract class Result<T>
     ///   otherwise, <see langword="false"/>.
     /// </returns>
     public abstract bool TryGetValue(out T value);
+
+    /// <summary>
+    ///   Gets the exception wrapped by this instance.
+    /// </summary>
+    /// <param name="ex">When this method returns, contains the exception wrapped by this
+    ///   instance, if this instance has an exception; otherwise, the contains default value
+    ///   for <see cref="Exception"/>.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance wraps a value;
+    ///   otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool TryGetException(out Exception ex);
 
     #endregion
 }

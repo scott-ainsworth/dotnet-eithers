@@ -372,7 +372,7 @@ public class TryGetValue_Tests {
     ///   is wrapped.
     /// </summary>
     [TestMethod]
-    public void ResultT_TryGetValue_returns_false_and_default_value_for_NoneT() =>
+    public void ResultT_TryGetValue_returns_false_and_default_value_for_ErrorResultT() =>
         RunUnitTests(new TryGetValue_returns_false_and_default_value_for_NoneT());
 
     private sealed class TryGetValue_returns_false_and_default_value_for_NoneT : IUnitTest0 {
@@ -388,7 +388,7 @@ public class TryGetValue_Tests {
     ///   value when a value is wrapped.
     /// </summary>
     [TestMethod]
-    public void ResultT_TryGetValue_returns_true_and_correct_value_for_SomeT() =>
+    public void ResultT_TryGetValue_returns_true_and_correct_value_for_ValueResultT() =>
         RunUnitTests(new TryGetValue_returns_true_and_correct_value_for_SomeT());
 
     private sealed class TryGetValue_returns_true_and_correct_value_for_SomeT : IUnitTest1 {
@@ -396,6 +396,48 @@ public class TryGetValue_Tests {
             var result = (Result<T>)Result.From(value);
             Assert.IsTrue(result.TryGetValue(out var returnedValue));
             Assert.AreEqual(value, returnedValue);
+        }
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Result{T}.TryGetException(out Exception)"/>.
+/// </summary>
+[TestClass]
+public class TryGetException_Tests {
+
+    /// <summary>
+    ///   The <see cref="Result{T}.TryGetException(out Exception)"/> method returns true and
+    ///   the wrapped exception when an exception is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void ResultT_TryGetException_returns_true_and_correct_exception_for_ErrorResultT() =>
+        RunUnitTests(new TryGetException_returns_true_and_correct_exception_for_ErrorResultT());
+
+    private sealed class TryGetException_returns_true_and_correct_exception_for_ErrorResultT
+            : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var ex = new ArgumentException("test");
+            var result = (Result<T>)Result.From<T>(ex);
+            Assert.IsTrue(result.TryGetException(out var returnedEx));
+            Assert.AreEqual(ex, returnedEx);
+        }
+    }
+
+    /// <summary>
+    ///   The <see cref="Result{T}.TryGetException(out Exception)"/> method returns false and
+    ///   the default value for <see cref="Exception"/> when an exception is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void ResultT_TryGetException_returns_false_and_default_for_ValueResultT() =>
+        RunUnitTests(new TryGetException_returns_false_and_default_for_ValueResultT());
+
+    private sealed class TryGetException_returns_false_and_default_for_ValueResultT
+            : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var result = (Result<T>)Result.From(value);
+            Assert.IsFalse(result.TryGetException(out var returnedEx));
+            Assert.AreEqual(default, returnedEx);
         }
     }
 }
