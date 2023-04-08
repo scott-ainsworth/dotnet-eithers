@@ -137,3 +137,41 @@ public class ToString_Tests {
             Assert.AreEqual($"Maybe<{typeof(T).Name}>.None", Maybe<T>.None.ToString());
     }
 }
+
+/// <summary>
+///   Unit tests for <see cref="Maybe{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}.TryGetValue(out T)"/> method returns false when no value
+    ///   is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_TryGetValue_returns_false_and_default_value_for_NoneT() =>
+        RunUnitTests(new TryGetValue_returns_false_and_default_value_for_NoneT());
+
+    private sealed class TryGetValue_returns_false_and_default_value_for_NoneT : IUnitTest0 {
+        public void RunTest<T>() where T : notnull {
+            Assert.IsFalse(Maybe<T>.None.TryGetValue(out var returnedValue));
+            Assert.AreEqual(default, returnedValue);
+        }
+    }
+
+    /// <summary>
+    ///   The <see cref="Maybe{T}.TryGetValue(out T)"/> method returns true and the wrapped
+    ///   value when a value is wrapped.
+    /// </summary>
+    [TestMethod]
+    public void MaybeT_TryGetValue_returns_true_and_correct_value_for_SomeT() =>
+        RunUnitTests(new TryGetValue_returns_true_and_correct_value_for_SomeT());
+
+    private sealed class TryGetValue_returns_true_and_correct_value_for_SomeT : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var maybe = (Maybe<T>)Maybe.FromValue(value);
+            Assert.IsTrue(maybe.TryGetValue(out var returnedValue));
+            Assert.AreEqual(value, returnedValue);
+        }
+    }
+}

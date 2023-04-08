@@ -33,7 +33,7 @@ public abstract class Result<T>
     ///   Indicates whether or not this instance wraps an exception.
     /// </summary>
     /// <value>
-    ///   <see langword="true"/> if this instance wraps aand excpetion;
+    ///   <see langword="true"/> if this instance wraps and exception;
     ///   otherwise, <see langword="false"/>
     /// </value>
     public bool IsError => !IsValue;
@@ -145,7 +145,7 @@ public abstract class Result<T>
     ///   has not been implemented in a descendent class and
     ///   <see cref="Result{T}.GetHashCode"/> is called as a result.</exception>
     /// <remarks>
-    ///   <strong>Warning</strong>: GetHashCodemust be implemented in every descendent class.
+    ///   <strong>Warning</strong>: GetHashCode must be implemented in every descendent class.
     ///   If not implemented, this default implementation throws a
     ///   <see cref="NotImplementedException"/>.
     /// </remarks>
@@ -190,6 +190,33 @@ public abstract class Result<T>
     ///   instance's zero or one values.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    #endregion
+    #region TryGetValue & TryGetException
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the value wrapped by this
+    ///   instance, if this instance has a value; otherwise, contains the default value for
+    ///   type <typeparamref name="T"/>.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance wraps a value;
+    ///   otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool TryGetValue(out T value);
+
+    /// <summary>
+    ///   Gets the exception wrapped by this instance.
+    /// </summary>
+    /// <param name="ex">When this method returns, contains the exception wrapped by this
+    ///   instance, if this instance has an exception; otherwise, the contains default value
+    ///   for <see cref="Exception"/>.</param>
+    /// <returns>
+    ///   <see langword="true"/> if this instance wraps a value;
+    ///   otherwise, <see langword="false"/>.
+    /// </returns>
+    public abstract bool TryGetException(out Exception ex);
 
     #endregion
 }

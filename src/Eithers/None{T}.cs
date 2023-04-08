@@ -144,4 +144,20 @@ public sealed class None<T> : Maybe<T>
         $"{nameof(Maybe<T>)}<{typeof(T).Name}>.{nameof(None)}";
 
     #endregion
+    #region TryGetValue
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the default value for
+    ///   type <typeparamref name="T"/>.</param>
+    /// <returns>
+    ///   <see langword="false"/>; <see cref="Some{T}"/> never wraps a value.
+    /// </returns>
+    public override bool TryGetValue(out T value) {
+        value = default!;
+        return false;
+    }
+
+    #endregion
 }

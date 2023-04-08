@@ -430,7 +430,7 @@ public class HasValue_Property_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Maybe{T}"/> casts.
+///   Unit tests for <see cref="Some{T}.ToString()"/>.
 /// </summary>
 [TestClass]
 public class ToString_Tests {
@@ -439,11 +439,33 @@ public class ToString_Tests {
     ///   The <see cref="Some{T}.ToString"/> method creates the expected reprsentation.
     /// </summary>
     [TestMethod]
-    public void MaybeT_ToString_creates_correct_representation_for_SomeTs() =>
+    public void SomeT_ToString_creates_correct_representation_for_SomeTs() =>
         RunUnitTests(new ToString_creates_correct_representation_for_SomeT());
 
     private sealed class ToString_creates_correct_representation_for_SomeT : IUnitTest1 {
         public void RunTest<T>(T value) where T : notnull =>
             Assert.AreEqual($"Some<{typeof(T).Name}>({value})", Maybe.FromValue(value).ToString());
+    }
+}
+
+/// <summary>
+///   Unit tests for <see cref="Some{T}.TryGetValue(out T)"/>.
+/// </summary>
+[TestClass]
+public class TryGetValue_Tests {
+
+    /// <summary>
+    ///   The <see cref="Some{T}.TryGetValue(out T)"/> method returns true and the wrapped value.
+    /// </summary>
+    [TestMethod]
+    public void SomeT_TryGetValue_returns_true_and_correct_value() =>
+        RunUnitTests(new TryGetValue_returns_true_and_correct_value());
+
+    private sealed class TryGetValue_returns_true_and_correct_value : IUnitTest1 {
+        public void RunTest<T>(T value) where T : notnull {
+            var some = Maybe.FromValue(value);
+            Assert.IsTrue(some.TryGetValue(out var returnedValue));
+            Assert.AreEqual(value, returnedValue);
+        }
     }
 }

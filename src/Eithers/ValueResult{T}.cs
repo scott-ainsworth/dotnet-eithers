@@ -159,4 +159,33 @@ public sealed class ValueResult<T> : Result<T> where T : notnull {
     }
 
     #endregion
+    #region TryGetValue & TryGetException
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the value wrapped by this
+    ///   instance.</param>
+    /// <returns>
+    ///   <see langword="true"/>; <see cref="Some{T}"/> always wraps a value.
+    /// </returns>
+    public override bool TryGetValue(out T value) {
+        value = this.value;
+        return true;
+    }
+
+    /// <summary>
+    ///   Gets the exception wrapped by this instance.
+    /// </summary>
+    /// <param name="ex">When this method returns, contains the default value for
+    ///   type <see cref="Exception"/>.</param>
+    /// <returns>
+    ///   <see langword="false"/>.
+    /// </returns>
+    public override bool TryGetException(out Exception ex) {
+        ex = default!;
+        return false;
+    }
+
+    #endregion
 }

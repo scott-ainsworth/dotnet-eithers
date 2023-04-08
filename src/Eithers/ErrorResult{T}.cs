@@ -19,7 +19,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// </remarks>
     public override bool IsValue => false;
 
-    private readonly Exception Exception;
+    private readonly Exception exception;
 
     #endregion
     #region Constructors, Casts, and Conversions
@@ -34,7 +34,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
 #endif
         // Null check for callers that don't use code analyzers to catch errors
         _ = ex ?? throw new ArgumentNullException(nameof(ex));
-        this.Exception = ex;
+        exception = ex;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// <returns>
     ///   The wrapped exception.
     /// </returns>
-    public Exception ToException() => Exception;
+    public Exception ToException() => exception;
 
     #endregion
     #region IEquatable<Result<T>>, IEquatable<T>, and IEquatable Implementations
@@ -64,14 +64,14 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// <summary>
     ///   Determines whether the specified exception equals this instance's wrapped exception.
     /// </summary>
-    /// <param name="other">An <see cref="Exception"/> to compare with this instance.</param>
+    /// <param name="other">An <see cref="exception"/> to compare with this instance.</param>
     /// <returns>
     ///   <see langword="true"/> if <paramref name="other"/> equals this instance's wrapped
     ///   exception (<c>other == this.ToException()</c>); otherwise <see langword="false"/>.
     /// </returns>
     public override bool Equals(Exception other) {
         _ = other ?? throw new ArgumentNullException(nameof(other));
-        return other.Equals(this.Exception);
+        return other.Equals(exception);
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// </returns>
     public override bool Equals(ErrorResult<T> other) {
         _ = other ?? throw new ArgumentNullException(nameof(other));
-        return Equals(other.Exception);
+        return Equals(other.exception);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// <param name="obj">An <see cref="object"/> to compare with this instance.</param>
     /// <returns>
     ///   <list type="bullet">
-    ///     <item><see langword="true"/> if <paramref name="obj"/> is a <see cref="Exception"/>
+    ///     <item><see langword="true"/> if <paramref name="obj"/> is a <see cref="exception"/>
     ///       and it equals this instance's wrapped value
     ///       (<c>other == this.ToException()</c>)</item>;
     ///     <item><see langword="true"/> if <paramref name="obj"/> is an
@@ -131,7 +131,7 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// </returns>
     public override bool Equals(object obj) => obj switch {
         ErrorResult<T> v => Equals(v),
-        Exception c => c.Equals(Exception),
+        Exception c => c.Equals(exception),
         _ => false
     };
 
@@ -147,9 +147,9 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
     /// </returns>
     /// <remarks>
     ///   The hash code for a <see cref="ErrorResult{T}"/> is the hash code of its wrapped
-    ///   <see cref="System.Exception"/>.
+    ///   <see cref="Exception"/>.
     /// </remarks>
-    public override int GetHashCode() => Exception.GetHashCode();
+    public override int GetHashCode() => exception.GetHashCode();
 
     #endregion
 
@@ -160,7 +160,36 @@ public sealed class ErrorResult<T> : Result<T> where T : notnull {
 
     /// <inheritdoc/>
     public override IEnumerator<Exception> GetErrorEnumerator() {
-        yield return Exception;
+        yield return exception;
+    }
+
+    #endregion
+    #region TryGetValue & TryGetException
+
+    /// <summary>
+    ///   Gets the value wrapped by this instance.
+    /// </summary>
+    /// <param name="value">When this method returns, contains the default value for
+    ///   type <typeparamref name="T"/>.</param>
+    /// <returns>
+    ///   <see langword="false"/>; <see cref="ErrorResult{T}"/> never wraps a value.
+    /// </returns>
+    public override bool TryGetValue(out T value) {
+        value = default!;
+        return false;
+    }
+
+    /// <summary>
+    ///   Gets the exception wrapped by this instance.
+    /// </summary>
+    /// <param name="ex">When this method returns, contains the exception wrapped by
+    ///   this instance.</param>
+    /// <returns>
+    ///   <see langword="true"/>.
+    /// </returns>
+    public override bool TryGetException(out Exception ex) {
+        ex = exception;
+        return true;
     }
 
     #endregion
