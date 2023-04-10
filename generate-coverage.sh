@@ -18,16 +18,16 @@ dotnet build
 mkdir -p coverage/history coverage/report
 
 dotnet-coverage collect -f xml -o coverage/coverage.xml \
-    dotnet test --verbosity minimal --results-directory . \
-    --logger "html;logfilename=test-report.html;verbosity=detailed"
+	dotnet test --verbosity minimal --results-directory . \
+	--logger "html;logfilename=test-report.html;verbosity=detailed"
 reportgenerator \
-    -reports:'coverage/coverage.xml' \
-    -targetdir:'coverage/report' \
-    -reporttypes:'HtmlInline_AzurePipelines_Light;MarkdownSummary' \
-    -historydir:'coverage/history' \
-    -assemblyfilters:'-*.Tests.dll' \
-    -verbosity:'Warning' \
-    -title:'Ainsworth.Eithers Test Report'
+	-reports:'coverage/coverage.xml' \
+	-targetdir:'coverage/report' \
+	-reporttypes:'HtmlInline_AzurePipelines_Light;MarkdownSummary' \
+	-historydir:'coverage/history' \
+	-assemblyfilters:'-*.Tests.dll' \
+	-verbosity:'Warning' \
+	-title:'Ainsworth.Eithers Test Report'
 
 # Open the report
 

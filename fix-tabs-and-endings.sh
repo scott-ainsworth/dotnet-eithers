@@ -14,7 +14,7 @@ function fixup() {
 		else
 			echo "Fixing \"$f\""
 			gtouch --reference="$f" "$workfile"
-            gchmod --reference="$f" "$workfile"
+			gchmod --reference="$f" "$workfile"
 			cp -a "$f" "$f.bak"
 			mv "$workfile" "$f"
 		fi

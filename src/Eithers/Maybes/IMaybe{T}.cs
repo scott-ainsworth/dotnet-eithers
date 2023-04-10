@@ -18,35 +18,35 @@ namespace Ainsworth.Eithers;
 ///   </list>
 /// </remarks>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
-    Justification = "Constructor is protected and all subclasses are sealed.")]
+	"Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
+	Justification = "Constructor is protected and all subclasses are sealed.")]
 public interface IMaybe<T> : IEquatable<IMaybe<T>>, IEquatable<None<T>>, IEquatable<Some<T>>,
-    IEquatable<T>, IEnumerable<T> where T : notnull {
+	IEquatable<T>, IEnumerable<T> where T : notnull {
 
-    #region Properties
+	#region Properties
 
-    /// <summary>
-    ///   Determine if a <see cref="IMaybe{T}"/> wraps a value.
-    /// </summary>
-    /// <value>
-    ///   <see langword="true"/> if this instance wraps a value;
-    ///   otherwise <see langword="true"/>.
-    /// </value>
-    public abstract bool HasValue { get; }
+	/// <summary>
+	///   Determine if a <see cref="IMaybe{T}"/> wraps a value.
+	/// </summary>
+	/// <value>
+	///   <see langword="true"/> if this instance wraps a value;
+	///   otherwise <see langword="true"/>.
+	/// </value>
+	public abstract bool HasValue { get; }
 
-    #endregion
-    #region TryGetValue
+	#endregion
+	#region TryGetValue
 
-    /// <summary>
-    ///   Gets the value wrapped by this instance.
-    /// </summary>
-    /// <param name="value">When this method returns, contains the value wrapped by this instance,
-    ///   if this instance has a value; otherwise, the default value for type
-    ///   <typeparamref name="T"/>.</param>
-    /// <returns>
-    ///   <see langword="true"/> if this instance wraps a value; otherwise, <see langword="false"/>.
-    /// </returns>
-    public abstract bool TryGetValue(out T value);
+	/// <summary>
+	///   Gets the value wrapped by this instance.
+	/// </summary>
+	/// <param name="value">When this method returns, contains the value wrapped by this instance,
+	///   if this instance has a value; otherwise, the default value for type
+	///   <typeparamref name="T"/>.</param>
+	/// <returns>
+	///   <see langword="true"/> if this instance wraps a value; otherwise, <see langword="false"/>.
+	/// </returns>
+	public abstract bool TryGetValue(out T value);
 
-    #endregion
+	#endregion
 }

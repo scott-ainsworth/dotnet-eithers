@@ -15,15 +15,15 @@ namespace Ainsworth.Eithers;
 ///   </list>
 /// </remarks>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
-    Justification = "Constructor is protected and all subclasses are sealed.")]
+	"Major Code Smell", "S4035:Classes implementing 'IEquatable<T>' should be sealed",
+	Justification = "Constructor is protected and all subclasses are sealed.")]
 public static class Maybe<T> where T : notnull {
 
-    /// <summary>
-    ///   A singleton representing a <see cref="Maybe{T}"/> with no value.
-    /// </summary>
-    /// <value>
-    ///   The single instance of <see cref="None{T}"/>.
-    /// </value>
-    public static readonly IMaybe<T> None = None<T>.NoneSingleton;
+	/// <summary>
+	///   A singleton representing a <see cref="Maybe{T}"/> with no value.
+	/// </summary>
+	/// <value>
+	///   The single instance of <see cref="None{T}"/>.
+	/// </value>
+	public static readonly IMaybe<T> None = None<T>.NoneSingleton;
 }
