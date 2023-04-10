@@ -1,0 +1,19 @@
+# Default to auto EOL for text files
+* text=auto
+
+# Confirm source files are text
+*.cs     text
+*.csproj text
+
+# Visual Studio Solution files are a little different
+
+*.sln text eol=crlf
+
+# XML files are also text files
+*.xml    text
+*.resx   text
+
+# Images
+*.png  binary
+*.jpeg binary
+*.jpg  binary

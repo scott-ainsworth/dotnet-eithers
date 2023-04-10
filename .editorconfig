@@ -4,7 +4,7 @@ root: true
 # Indenting and file format
 ################################################################################################
 
-[*.cs]
+[*]
 indent_style: space
 indent_size: 4
 tab_width: 4
@@ -13,11 +13,26 @@ charset: utf-8
 trim_trailing_whitespace: true
 insert_final_newline: true
 
+[*.cs]
+indent_style: tab
+indent_size: 4
+tab_width: 4
+
+[*.csproj,*.sln]
+indent_style: tab
+indent_size: 2
+tab_width: 2
+
+[*.xml]
+indent_style: tab
+indent_size: 2
+tab_width: 2
+
 ################################################################################################
 # C# Compiler Diagnostics
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
 ################################################################################################
-
+[*.cs]
 
 # CS0659: Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
 # Covered by SonarLint diagnostic S1206
