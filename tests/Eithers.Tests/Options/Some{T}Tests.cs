@@ -8,11 +8,13 @@ using static TestSupport.TestRunner;
 
 // Disable SonarLint S2699 because most assertions are in called subroutines.
 #pragma warning disable S2699 // Test should include assertions
+// Disable SonarLint S4144 because it does not consider type constraints.
+#pragma warning disable S4144 // Methods should not have identical implementations
 
 namespace Options_SomeT_Tests;
 
 /// <summary>
-///   Unit tests for <see cref="Option{T}"/> casts.
+///   Unit tests for <see cref="Some{T}"/>.
 /// </summary>
 [TestClass]
 public class Constructor_Tests {
@@ -26,7 +28,7 @@ public class Constructor_Tests {
 
 	private sealed class SomeT_Constructors_are_not_public : IUnitTest0 {
 		public void RunTest<T>() where T : notnull {
-			var constructors = typeof(Option<T>).GetConstructors(
+			var constructors = typeof(Some<T>).GetConstructors(
 				BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 			Assert.IsFalse(constructors.Any(), $"{typeof(T)} has at least 1 public constructor");
 		}
@@ -35,6 +37,10 @@ public class Constructor_Tests {
 	/// <summary>
 	///   The <see cref="Some{T}"/> constructor throws on <see langword="null"/> value.
 	/// </summary>
+	/// <remarks>
+	///   Since this constructor is not publie, a <see langword="null"/> arguments indicates
+	///   a bug in one of the <see cref="Option"/> methods.
+	/// </remarks>
 	[TestMethod]
 	public void SomeT_constructor_throws_on_null() =>
 		RunUnitTests(new Constructor_throws_on_null());
@@ -76,16 +82,19 @@ public class EqualsOptionT_Tests {
 	///  The <see cref="Some{T}.Equals(IOption{T})"/> method returns <see langword="false"/> None.
 	/// </summary>
 	[TestMethod]
-	public void SomeT_EqualsOptionT_returns_false_None() =>
+	public void SomeT_EqualsOptionT_returns_false_for_None() =>
 		RunUnitTests(new EqualsOptionT_returns_false_for_None());
 
-	private sealed class EqualsOptionT_returns_false_for_None : IUnitTest1 {
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Minor Code Smell", "S1905:Redundant casts should not be used",
-			Justification = "Cast is necessary to force correct Equals() calls")]
-		public void RunTest<T>(T value) where T : notnull {
+	private sealed class EqualsOptionT_returns_false_for_None : IUnitTest1Split {
+		public void RunTestOnReferenceType<T>(T value) where T : class {
 			var some = Option.FromValue(value);
-			Assert.IsFalse(some.Equals((IOption<T>)Option<T>.None));
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals(none));
+		}
+		public void RunTestOnValueType<T>(T value) where T : struct {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals(none));
 		}
 	}
 
@@ -100,11 +109,19 @@ public class EqualsOptionT_Tests {
 	public void SomeT_EqualsOptionT_returns_throws_for_null_argument() =>
 		RunUnitTests(new EqualsOptionT_returns_throws_for_null_argument());
 
-	private sealed class EqualsOptionT_returns_throws_for_null_argument : IUnitTest0 {
-		public void RunTest<T>() where T : notnull {
+	private sealed class EqualsOptionT_returns_throws_for_null_argument : IUnitTest1Split {
+		public void RunTestOnReferenceType<T>(T value) where T : class {
+			var some = Option.FromValue(value);
 			// Use 'null!' to simulate call from '#nullable disable' environment
 			var ex = Assert.ThrowsException<ArgumentNullException>(
-				() => Option<T>.None.Equals((IOption<T>)null!));
+				() => some.Equals((IOption<T>)null!));
+			Assert.AreEqual("other", ex.ParamName);
+		}
+		public void RunTestOnValueType<T>(T value) where T : struct {
+			var some = Option.FromValue(value);
+			// Use 'null!' to simulate call from '#nullable disable' environment
+			var ex = Assert.ThrowsException<ArgumentNullException>(
+				() => some.Equals((IOption<T>)null!));
 			Assert.AreEqual("other", ex.ParamName);
 		}
 	}
@@ -127,7 +144,7 @@ public class EqualsOptionT_Tests {
 }
 
 /// <summary>
-///   Unit test for <see cref="Some{T}.Equals(None{T})"/> tests.
+///   Unit test for <see cref="Some{T}.Equals(None{T})"/>.
 /// </summary>
 [TestClass]
 public class EqualsNoneT_Tests {
@@ -139,23 +156,29 @@ public class EqualsNoneT_Tests {
 	public void SomeT_EqualsNoneT_returns_false() =>
 		RunUnitTests(new EqualsOptionT_returns_false());
 
-	private sealed class EqualsOptionT_returns_false : IUnitTest1 {
-		public void RunTest<T>(T value) where T : notnull {
-			IOption<T> option = Option.FromValue(value);
-			Assert.IsFalse(option.Equals((None<T>)Option<T>.None));
+	private sealed class EqualsOptionT_returns_false : IUnitTest1Split {
+		public void RunTestOnReferenceType<T>(T value) where T : class {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals((None<T>)none));
+		}
+		public void RunTestOnValueType<T>(T value) where T : struct {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals((None<T>)none));
 		}
 	}
 }
 
 /// <summary>
-///   Unit test for <see cref="Some{T}"/>.Equals(object) tests.
+///   Unit test for <see cref="Some{T}.Equals(object)"/>.
 /// </summary>
 [TestClass]
 public class EqualsObject_Tests {
 
 	/// <summary>
 	///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="false"/>
-	///  not equal values.
+	///  not equal <see cref="Some{T}"/> values.
 	/// </summary>
 	[TestMethod]
 	public void SomeT_EqualsObject_returns_false_for_not_equal_SomeT_value() =>
@@ -163,9 +186,9 @@ public class EqualsObject_Tests {
 
 	private sealed class EqualsObject_returns_false_for_not_equal_SomeT_value : IUnitTest2 {
 		public void RunTest<T>(T value, T value2) where T : notnull {
-			IOption<T> option = Option.FromValue(value);
-			IOption<T> option2 = Option.FromValue(value2);
-			Assert.IsFalse(option.Equals((object)option2));
+			IOption<T> some = Option.FromValue(value);
+			IOption<T> some2 = Option.FromValue(value2);
+			Assert.IsFalse(some.Equals((object)some2));
 		}
 	}
 
@@ -179,8 +202,8 @@ public class EqualsObject_Tests {
 
 	private sealed class EqualsObject_returns_false_for_not_equal_value : IUnitTest2 {
 		public void RunTest<T>(T value, T value2) where T : notnull {
-			IOption<T> option = Option.FromValue(value);
-			Assert.IsFalse(option.Equals((object)value2));
+			IOption<T> some = Option.FromValue(value);
+			Assert.IsFalse(some.Equals((object)value2));
 		}
 	}
 
@@ -191,10 +214,16 @@ public class EqualsObject_Tests {
 	public void SomeT_EqualsObject_returns_false_None() =>
 		RunUnitTests(new EqualsObject_returns_false_for_None());
 
-	private sealed class EqualsObject_returns_false_for_None : IUnitTest1 {
-		public void RunTest<T>(T value) where T : notnull {
-			var option = Option.FromValue(value);
-			Assert.IsFalse(option.Equals((object)Option<T>.None));
+	private sealed class EqualsObject_returns_false_for_None : IUnitTest1Split {
+		public void RunTestOnReferenceType<T>(T value) where T : class {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals((object)none));
+		}
+		public void RunTestOnValueType<T>(T value) where T : struct {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals((object)none));
 		}
 	}
 
@@ -208,14 +237,14 @@ public class EqualsObject_Tests {
 
 	private sealed class EqualsObject_returns_false_for_null_argument : IUnitTest1 {
 		public void RunTest<T>(T value) where T : notnull {
-			var option = Option.FromValue(value);
-			Assert.IsFalse(option.Equals((object)null!));
+			var some = Option.FromValue(value);
+			Assert.IsFalse(some.Equals((object)null!));
 		}
 	}
 
 	/// <summary>
 	///  The <see cref="Some{T}.Equals(object)"/> method returns <see langword="true"/>
-	///  for equal value wrapped in <see cref="Some{T}"/>.
+	///  for equal <see cref="Some{T}"/> value.
 	/// </summary>
 	[TestMethod]
 	public void SomeT_EqualsObject_returns_true_for_equal_SomeT_value() =>
@@ -223,9 +252,9 @@ public class EqualsObject_Tests {
 
 	private sealed class EqualsObject_returns_true_for_equal_SomeT_value : IUnitTest1 {
 		public void RunTest<T>(T value) where T : notnull {
-			IOption<T> option = Option.FromValue(value);
-			IOption<T> option2 = Option.FromValue(value);
-			Assert.IsTrue(option.Equals((object)option2));
+			IOption<T> some = Option.FromValue(value);
+			IOption<T> some2 = Option.FromValue(value);
+			Assert.IsTrue(some.Equals((object)some2));
 		}
 	}
 
@@ -239,8 +268,8 @@ public class EqualsObject_Tests {
 
 	private sealed class EqualsObject_returns_true_for_equal_value : IUnitTest1 {
 		public void RunTest<T>(T value) where T : notnull {
-			IOption<T> option = Option.FromValue(value);
-			Assert.IsTrue(option.Equals((object)value));
+			IOption<T> some = Option.FromValue(value);
+			Assert.IsTrue(some.Equals((object)value));
 		}
 	}
 }
@@ -253,7 +282,7 @@ public class EqualsSomeT_Tests {
 
 	/// <summary>
 	///  The <see cref="Some{T}.Equals(Some{T})"/> method returns <see langword="false"/>
-	///  not equal values.
+	///  not equal <see cref="Some{T}"/> values.
 	/// </summary>
 	[TestMethod]
 	public void SomeT_EqualsSomeT_returns_false_for_not_equal_values() =>
@@ -268,16 +297,22 @@ public class EqualsSomeT_Tests {
 	}
 
 	/// <summary>
-	///  The <see cref="Some{T}.Equals(Some{T})"/> method returns <see langword="false"/> None.
+	///  The <see cref="Some{T}.Equals(None{T})"/> method returns <see langword="false"/>.
 	/// </summary>
 	[TestMethod]
-	public void SomeT_EqualsSomeT_returns_false_None() =>
-		RunUnitTests(new EqualsSomeT_returns_false_for_None());
+	public void SomeT_EqualsNoneT_returns_false() =>
+		RunUnitTests(new EqualsNoneT_returns_false());
 
-	private sealed class EqualsSomeT_returns_false_for_None : IUnitTest1 {
-		public void RunTest<T>(T value) where T : notnull {
+	private sealed class EqualsNoneT_returns_false : IUnitTest1Split {
+		public void RunTestOnReferenceType<T>(T value) where T : class {
 			var some = Option.FromValue(value);
-			Assert.IsFalse(some.Equals(Option<T>.None));
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals(none));
+		}
+		public void RunTestOnValueType<T>(T value) where T : struct {
+			var some = Option.FromValue(value);
+			var none = Option.From<T>(null!);
+			Assert.IsFalse(some.Equals(none));
 		}
 	}
 
@@ -292,18 +327,19 @@ public class EqualsSomeT_Tests {
 	public void SomeT_EqualsSomeT_returns_throws_for_null_argument() =>
 		RunUnitTests(new EqualsSomeT_returns_throws_for_null_argument());
 
-	private sealed class EqualsSomeT_returns_throws_for_null_argument : IUnitTest0 {
-		public void RunTest<T>() where T : notnull {
+	private sealed class EqualsSomeT_returns_throws_for_null_argument : IUnitTest1 {
+		public void RunTest<T>(T value) where T : notnull {
+			var some = Option.FromValue(value);
 			// Use 'null!' to simulate call from '#nullable disable' environment
 			var ex = Assert.ThrowsException<ArgumentNullException>(
-				() => Option<T>.None.Equals((Some<T>)null!));
+				() => some.Equals((Some<T>)null!));
 			Assert.AreEqual("other", ex.ParamName);
 		}
 	}
 
 	/// <summary>
 	///  The <see cref="Some{T}.Equals(Some{T})"/> method returns <see langword="true"/>
-	///  for equal values.
+	///  for equal <see cref="Some{T}"/> values.
 	/// </summary>
 	[TestMethod]
 	public void SomeT_EqualsSomeT_returns_true_for_equal_values() =>
@@ -401,10 +437,10 @@ public class GetEnumerator_Tests {
 }
 
 /// <summary>
-///   Unit tests for <see cref="Option{T}"/>.GetHashCode().
+///   Unit tests for <see cref="Some{T}"/>.GetHashCode().
 /// </summary>
 /// <remarks>
-///   <see cref="Option{T}"/> does not override <see cref="object.GetHashCode"/>; however,
+///   <see cref="Some{T}"/> does not override <see cref="object.GetHashCode"/>; however,
 ///   <see cref="Some{T}"/> and <see cref="None{T}"/> do.  These test cases show that
 ///   the <see cref="object.GetHashCode"/> overrides calculate the expected hash code.
 /// </remarks>

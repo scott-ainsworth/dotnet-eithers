@@ -9,8 +9,7 @@ namespace Ainsworth.Eithers;
 /// <summary>
 ///   A realization of <see cref="IOption{T}"/> that represents a Option that does not value.
 /// </summary>
-/// <typeparam name="T">The type of the value contained by the  <see cref="Option{T}"/>
-///   superclass.</typeparam>
+/// <typeparam name="T">The type of the value contained by the this option.</typeparam>
 [DebuggerDisplay("None")]
 public sealed class None<T> : IOption<T> where T : notnull {
 
@@ -25,7 +24,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	/// <value>
 	///   The single instance of <see cref="None{T}"/>.
 	/// </value>
-	internal static readonly None<T> NoneSingleton = new();
+	internal static readonly None<T> singleton = new();
 
 	#endregion
 	#region Constructors, Casts, and Conversions
@@ -35,7 +34,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	/// </summary>
 	/// <remarks>
 	///   To ensure all <see cref="None{T}"/>s are singleton's, this constructor is private.
-	///   The singletons are created by the <see cref="NoneSingleton"/> field.
+	///   The singletons are created by the <see cref="singleton"/> field.
 	/// </remarks>
 	private None() { }
 
@@ -76,7 +75,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	public bool Equals(IOption<T> other) {
 		// Null check for callers that don't use code analyzers to catch errors
 		_ = other ?? throw new ArgumentNullException(nameof(other));
-		return other == NoneSingleton;
+		return other == singleton;
 	}
 
 	/// <summary>
@@ -93,7 +92,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	public bool Equals(None<T> other) {
 		// Null check for callers that don't use code analyzers to catch errors
 		_ = other ?? throw new ArgumentNullException(nameof(other));
-		return other == NoneSingleton;
+		return other == singleton;
 	}
 
 	/// <summary>
@@ -122,7 +121,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	///   <see langword="true"/> if <paramref name="obj"/> is equal to this instance; otherwise,
 	///   <see langword="false"/>.
 	/// </returns>
-	public override bool Equals(object obj) => obj == NoneSingleton;
+	public override bool Equals(object obj) => obj == singleton;
 
 	#endregion
 	#region IEnumerable<T> Implementation
@@ -166,7 +165,7 @@ public sealed class None<T> : IOption<T> where T : notnull {
 	///  A string that represents this <see cref="None{T}"/>.
 	/// </returns>
 	public override string ToString() =>
-		$"{nameof(IOption<T>)}<{typeof(T).Name}>.{nameof(Option<T>.None)}";
+		$"{nameof(None<T>)}<{typeof(T).Name}>.{nameof(None<T>.singleton)}";
 
 	#endregion
 	#region TryGetValue
