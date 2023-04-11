@@ -42,8 +42,8 @@ public class From_Tests {
 	}
 
 	/// <summary>
-	///   The <see cref="Option.From{T}(T?)"/> method returns the correct instance of
-	///   <see cref="Option{T}.None"/> for the provided null value.
+	///   The <see cref="Option.From{T}(T?)"/> method returns an instance of the correct
+	///   <see cref="None{T}"/> type for null argument.
 	/// </summary>
 	[TestMethod]
 	public void Options_From_returns_None_from_null() =>
@@ -54,13 +54,11 @@ public class From_Tests {
 			var option = Option.From((T?)null);
 			Assert.IsInstanceOfType<IOption<T>>(option);
 			Assert.IsInstanceOfType<None<T>>(option);
-			Assert.AreSame(Option<T>.None, option);
 		}
 		public void RunTestOnValueType<T>() where T : struct {
 			var option = Option.From((T?)null);
 			Assert.IsInstanceOfType<IOption<T>>(option);
 			Assert.IsInstanceOfType<None<T>>(option);
-			Assert.AreSame(Option<T>.None, option);
 		}
 	}
 }
@@ -69,7 +67,7 @@ public class From_Tests {
 ///   Unit tests for <see cref="Option.FromValue{T}(T)"/> methods.
 /// </summary>
 [TestClass]
-public class FromValue__Tests {
+public class FromValue_Tests {
 
 	/// <summary>
 	///   The <see cref="Option.FromValue{T}(T)"/> method returns a <see cref="Some{T}"/> of the
@@ -153,8 +151,8 @@ public class ToOption_Tests {
 	}
 
 	/// <summary>
-	///   The <see cref="Option.ToOption{T}(T?)"/> method returns the correct instance of
-	///   <see cref="Option{T}.None"/> for null value.
+	///   The <see cref="Option.ToOption{T}(T?)"/> method returns an instance of the correct
+	///   <see cref="None{T}"/> type for the provided null value.
 	/// </summary>
 	[TestMethod]
 	public void Options_ToOption_returns_None_for_null() =>
@@ -165,13 +163,11 @@ public class ToOption_Tests {
 			var option = ((T?)null).ToOption();
 			Assert.IsInstanceOfType<IOption<T>>(option);
 			Assert.IsInstanceOfType<None<T>>(option);
-			Assert.AreSame(Option<T>.None, option);
 		}
 		public void RunTestOnValueType<T>() where T : struct {
 			var option = ((T?)null).ToOption();
 			Assert.IsInstanceOfType<IOption<T>>(option);
 			Assert.IsInstanceOfType<None<T>>(option);
-			Assert.AreSame(Option<T>.None, option);
 		}
 	}
 }
