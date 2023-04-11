@@ -12,11 +12,12 @@
 	</ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<LangVersion>11.0</LangVersion>
-		<DocumentationFile>bin\Debug\netstandard2.1\Ainsworth.Eithers.xml</DocumentationFile>
+		<DocumentationFile>bin\Debug\netstandard2.0\Ainsworth.Eithers.xml</DocumentationFile>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<LangVersion>11.0</LangVersion>
 		<DebugSymbols>true</DebugSymbols>
+		<DocumentationFile>bin\Release\netstandard2.0\Ainsworth.Eithers.xml</DocumentationFile>
 	</PropertyGroup>
 	<PropertyGroup>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
