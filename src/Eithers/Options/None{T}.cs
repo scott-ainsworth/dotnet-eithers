@@ -7,12 +7,12 @@ using System.Runtime.CompilerServices;
 namespace Ainsworth.Eithers;
 
 /// <summary>
-///   A realization of <see cref="IMaybe{T}"/> that represents a Maybe that does not value.
+///   A realization of <see cref="IOption{T}"/> that represents a Option that does not value.
 /// </summary>
-/// <typeparam name="T">The type of the value contained by the  <see cref="Maybe{T}"/>
+/// <typeparam name="T">The type of the value contained by the  <see cref="Option{T}"/>
 ///   superclass.</typeparam>
 [DebuggerDisplay("None")]
-public sealed class None<T> : IMaybe<T> where T : notnull {
+public sealed class None<T> : IOption<T> where T : notnull {
 
 	#region Properties
 
@@ -20,7 +20,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	public bool HasValue => false;
 
 	/// <summary>
-	///   A singleton representing a <see cref="IMaybe{T}"/> with no value.
+	///   A singleton representing a <see cref="IOption{T}"/> with no value.
 	/// </summary>
 	/// <value>
 	///   The single instance of <see cref="None{T}"/>.
@@ -40,7 +40,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	private None() { }
 
 	#endregion
-	#region IEquatable<T> and IEquatable<IMaybe<T>> Implementations
+	#region IEquatable<T> and IEquatable<IOption<T>> Implementations
 
 	/// <summary>
 	///   Determines whether the specified value equals this instance's wrapped value.
@@ -63,9 +63,9 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	}
 
 	/// <summary>
-	///   Determines whether the specified <see cref="IMaybe{T}"/> equals the current instance.
+	///   Determines whether the specified <see cref="IOption{T}"/> equals the current instance.
 	/// </summary>
-	/// <param name="other">A <see cref="IMaybe{T}"/> to compare with this instance.</param>
+	/// <param name="other">A <see cref="IOption{T}"/> to compare with this instance.</param>
 	/// <returns>
 	///   <see langword="true"/> if <paramref name="other"/> is equal to this instance; otherwise,
 	///   <see langword="false"/>.
@@ -73,7 +73,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Design", "CA1065:Do not raise exceptions in unexpected locations",
 		Justification = "For this library, Equals(null) is invalid.")]
-	public bool Equals(IMaybe<T> other) {
+	public bool Equals(IOption<T> other) {
 		// Null check for callers that don't use code analyzers to catch errors
 		_ = other ?? throw new ArgumentNullException(nameof(other));
 		return other == NoneSingleton;
@@ -97,11 +97,11 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	}
 
 	/// <summary>
-	///   Determines whether the specified <see cref="Some{T}"/> equals the current instance.
+	///   Determines whether the specified <see cref="None{T}"/> equals the current instance.
 	/// </summary>
-	/// <param name="other">A <see cref="Some{T}"/> to compare with this instance.</param>
+	/// <param name="other">A <see cref="None{T}"/> to compare with this instance.</param>
 	/// <returns>
-	///   <see langword="false"/>; a <see cref="None{T}"/> and a <see cref="Some{T}"/> can
+	///   <see langword="false"/>; a <see cref="None{T}"/> and a <see cref="None{T}"/> can
 	///   never be equal.
 	/// </returns>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -133,7 +133,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	}
 
 	/// <summary>
-	///   Returns an enumerator that threats this <see cref="IMaybe{T}"/> as a collection
+	///   Returns an enumerator that threats this <see cref="IOption{T}"/> as a collection
 	///   of zero or one values.
 	/// </summary>
 	/// <returns>
@@ -166,7 +166,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	///  A string that represents this <see cref="None{T}"/>.
 	/// </returns>
 	public override string ToString() =>
-		$"{nameof(IMaybe<T>)}<{typeof(T).Name}>.{nameof(Maybe<T>.None)}";
+		$"{nameof(IOption<T>)}<{typeof(T).Name}>.{nameof(Option<T>.None)}";
 
 	#endregion
 	#region TryGetValue
@@ -177,7 +177,7 @@ public sealed class None<T> : IMaybe<T> where T : notnull {
 	/// <param name="value">When this method returns, contains the default value for
 	///   type <typeparamref name="T"/>.</param>
 	/// <returns>
-	///   <see langword="false"/>; <see cref="Some{T}"/> never wraps a value.
+	///   <see langword="false"/>; <see cref="None{T}"/> never wraps a value.
 	/// </returns>
 	public bool TryGetValue(out T value) {
 		value = default!;
